@@ -1,0 +1,30 @@
+{
+	"name": "Knit",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"Knit": {
+				"$path": "src/Knit",
+				"Util": {
+					"$path": "src/Shared"
+				}
+			}
+		},
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"Knit": {
+				"$path": "src/Server"
+			}
+		},
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+				"Knit": {
+					"$path": "src/Client"
+				}
+			}
+		}
+	}
+}
