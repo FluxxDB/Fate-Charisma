@@ -1,6 +1,6 @@
 local ControllersToLoad = {
-    "RegionController";
     "LatencyController";
+    "InputController";
 }
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

@@ -1,0 +1,316 @@
+{
+    "children": {
+        "ReplicatedStorage": {
+            "className": "ReplicatedStorage",
+            "children": {
+                "Knit": {
+                    "className": "ModuleScript",
+                    "children": {
+                        "KnitClient": {
+                            "className": "ModuleScript"
+                        },
+                        "Version": {
+                            "className": "StringValue"
+                        },
+                        "Util": {
+                            "className": "Folder",
+                            "children": {
+                                "Signal": {
+                                    "className": "ModuleScript"
+                                },
+                                "TableUtil": {
+                                    "className": "ModuleScript"
+                                },
+                                "Sequencer": {
+                                    "className": "ModuleScript"
+                                },
+                                "Buffers": {
+                                    "className": "Folder",
+                                    "children": {
+                                        "KeyCache": {
+                                            "className": "ModuleScript"
+                                        },
+                                        "PingBuffer": {
+                                            "className": "ModuleScript"
+                                        },
+                                        "RingBuffer": {
+                                            "className": "ModuleScript"
+                                        }
+                                    }
+                                },
+                                "Component": {
+                                    "className": "ModuleScript"
+                                },
+                                "VectorUtil": {
+                                    "className": "ModuleScript"
+                                },
+                                "Maid": {
+                                    "className": "ModuleScript"
+                                },
+                                "Remote": {
+                                    "className": "Folder",
+                                    "children": {
+                                        "RemoteEvent": {
+                                            "className": "ModuleScript"
+                                        },
+                                        "RemoteProperty": {
+                                            "className": "ModuleScript"
+                                        }
+                                    }
+                                },
+                                "Thread": {
+                                    "className": "ModuleScript"
+                                },
+                                "FloodCheck": {
+                                    "className": "ModuleScript"
+                                },
+                                "ZoneService": {
+                                    "className": "ModuleScript",
+                                    "children": {
+                                        "Zone": {
+                                            "className": "ModuleScript"
+                                        }
+                                    }
+                                },
+                                "Promise": {
+                                    "className": "ModuleScript"
+                                }
+                            }
+                        },
+                        "KnitServer": {
+                            "className": "ModuleScript"
+                        }
+                    }
+                },
+                "Assets": {
+                    "className": "Folder",
+                    "children": {
+                        "Weapons": {
+                            "className": "Folder"
+                        },
+                        "Sequences": {
+                            "className": "Folder",
+                            "children": {
+                                "Sword": {
+                                    "className": "Folder",
+                                    "children": {
+                                        "Basic": {
+                                            "className": "Folder",
+                                            "children": {
+                                                "Info": {
+                                                    "className": "ModuleScript",
+                                                    "children": []
+                                                }
+                                            }
+                                        },
+                                        "BasicR": {
+                                            "className": "Folder",
+                                            "children": {
+                                                "Info": {
+                                                    "className": "ModuleScript"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "ReplicatedFirst": {
+            "className": "ReplicatedFirst"
+        },
+        "LocalizationService": {
+            "className": "LocalizationService"
+        },
+        "TestService": {
+            "className": "TestService"
+        },
+        "ServerStorage": {
+            "className": "ServerStorage"
+        },
+        "SoundService": {
+            "className": "SoundService"
+        },
+        "StarterPack": {
+            "className": "StarterPack"
+        },
+        "Workspace": {
+            "className": "Workspace",
+            "children": {
+                "Dummy": {
+                    "className": "Model",
+                    "children": {
+                        "Mask": {
+                            "className": "MeshPart"
+                        },
+                        "Torso": {
+                            "className": "Part",
+                            "children": {
+                                "Neck": {
+                                    "className": "Motor6D"
+                                }
+                            }
+                        },
+                        "Head": {
+                            "className": "Part",
+                            "children": {
+                                "Face": {
+                                    "className": "Decal"
+                                },
+                                "Mesh": {
+                                    "className": "SpecialMesh"
+                                }
+                            }
+                        },
+                        "HumanoidRootPart": {
+                            "className": "Part",
+                            "children": []
+                        },
+                        "Humanoid": {
+                            "className": "Humanoid"
+                        }
+                    }
+                },
+                "Baseplate": {
+                    "className": "Part"
+                },
+                "Camera": {
+                    "className": "Camera"
+                },
+                "Terrain": {
+                    "className": "Terrain"
+                }
+            }
+        },
+        "Chat": {
+            "className": "Chat"
+        },
+        "ServerScriptService": {
+            "className": "ServerScriptService",
+            "children": {
+                "Knit": {
+                    "className": "Script",
+                    "children": {
+                        "Services": {
+                            "className": "Folder",
+                            "children": {
+                                "SequenceTestService": {
+                                    "className": "ModuleScript"
+                                },
+                                "CharacterService": {
+                                    "className": "ModuleScript"
+                                },
+                                "LatencyService": {
+                                    "className": "ModuleScript"
+                                },
+                                "PlayerService": {
+                                    "className": "ModuleScript"
+                                }
+                            }
+                        },
+                        "Modules": {
+                            "className": "Folder",
+                            "children": {
+                                "ProfileService": {
+                                    "className": "ModuleScript"
+                                },
+                                "PlayerObject": {
+                                    "className": "ModuleScript"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "StarterGui": {
+            "className": "StarterGui"
+        },
+        "Lighting": {
+            "className": "Lighting"
+        },
+        "StarterPlayer": {
+            "className": "StarterPlayer",
+            "children": {
+                "StarterPlayerScripts": {
+                    "className": "StarterPlayerScripts",
+                    "children": {
+                        "Knit": {
+                            "className": "LocalScript",
+                            "children": {
+                                "Controllers": {
+                                    "className": "Folder",
+                                    "children": {
+                                        "LatencyController": {
+                                            "className": "ModuleScript"
+                                        },
+                                        "SequenceTestController": {
+                                            "className": "ModuleScript"
+                                        },
+                                        "RegionController": {
+                                            "className": "ModuleScript"
+                                        }
+                                    }
+                                },
+                                "Modules": {
+                                    "className": "Folder",
+                                    "children": {
+                                        "Ragdoll": {
+                                            "className": "ModuleScript",
+                                            "children": {
+                                                "RagdollUtils": {
+                                                    "className": "ModuleScript"
+                                                },
+                                                "Rigtypes": {
+                                                    "className": "ModuleScript"
+                                                }
+                                            }
+                                        },
+                                        "BoatTween": {
+                                            "className": "ModuleScript",
+                                            "children": {
+                                                "TweenFunctions": {
+                                                    "className": "ModuleScript",
+                                                    "children": {
+                                                        "Bezier": {
+                                                            "className": "ModuleScript"
+                                                        }
+                                                    }
+                                                },
+                                                "Lerps": {
+                                                    "className": "ModuleScript"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "StarterCharacterScripts": {
+                    "className": "StarterCharacterScripts"
+                }
+            }
+        },
+        "Players": {
+            "className": "Players",
+            "children": {
+                "Fluxx_DB": {
+                    "className": "Player",
+                    "children": {
+                        "Backpack": {
+                            "className": "Backpack"
+                        },
+                        "PlayerScripts": {
+                            "className": "PlayerScripts"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

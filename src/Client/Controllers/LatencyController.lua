@@ -4,7 +4,7 @@ local LatencyService
 
 -- Create Knit controller
 local LatencyController = Knit.CreateController {
-    Name = "LatencyService";
+    Name = "LatencyController";
     CurrentPing = 0;
 }
 
