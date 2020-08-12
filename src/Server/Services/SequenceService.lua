@@ -54,26 +54,41 @@ function SequenceService:KnitStart()
         if not PlayerObject or
             not PlayerObject.Tool or
             not Hit or
-            not Hit.Parent 
-        then 
-            return 
-        end
-
-        local Sequence = GetSequence(PlayerObject.Tool.Type,SequenceName)
-        if not Sequence or 
-            PlayerObject.LastAttack and (
-            Sequence[Index]
-            )
-            
+            not Hit.Parent or
+            not Hit.PrimaryPart
         then
             return
+        end
+
+        local LAttack = PlayerObject.LastAttack
+        local LIndex = PlayerObject.LastIndex
+        local Sequence = GetSequence(PlayerObject.Tool.Type, SequenceName)
+
+        if not Sequence or
+            not (LAttack == Sequence and LIndex == Index - 1)
+         then
+            return
+        end
+
+        if LAttack ~= Sequence then
+            local Invalid = true
+
+            for Number, Possible in pairs(LAttack.Possible) do
+                if Possible == Sequence and Number == LIndex and Index == 1 then
+                    Invalid = false
+                end
+            end
+
+            if Invalid then return end
         end
 
         local IsPlayer = PlayerService:GetPlayerFromCharacter(Hit)
         if IsPlayer then -- Player
             print("Valid Magnitude Check")
         else -- NPC
-            print("Basic Magnitude Check")
+            if Player:DistanceFromCharacter(Hit.PrimaryPart.Position) > 50 then
+                return
+            end
         end
 
         PlayerObject.LastAttack = Sequence

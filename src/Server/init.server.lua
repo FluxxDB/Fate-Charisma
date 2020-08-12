@@ -1,7 +1,7 @@
 local ServicesToLoad = {
     "PlayerService";
     "LatencyService";
-    "SequenceService";
+    -- "SequenceService";
 }
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
