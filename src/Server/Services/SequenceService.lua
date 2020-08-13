@@ -65,6 +65,7 @@ function SequenceService:KnitStart()
         local Sequence = GetSequence(PlayerObject.Tool.Type, SequenceName)
 
         if not Sequence or
+            not LAttack and (Index > 1 or not Sequence.IsStarter) or
             not (LAttack == Sequence and LIndex == Index - 1)
          then
             return
