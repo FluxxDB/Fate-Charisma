@@ -19,11 +19,11 @@ function PlayerObject.new(Player, Profile)
 
         PositionBuffer = RingBuffer.new(30);
         PingBuffer = PingBuffer.new(10);
-        
+
         CanPing = true;
         Ping = 950;
     }
-	
+
 	return setmetatable(self, PlayerObject)
 end
 

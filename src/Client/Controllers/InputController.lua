@@ -75,7 +75,7 @@ local function WereAllTapped(InSeconds, ...)
 			return false
 		end
 	end
-	
+
 	return true
 end
 
@@ -109,7 +109,7 @@ local function WasAllTapped(InSeconds, ...)
 			return false
 		end
 	end
-	
+
 	return true
 end
 
@@ -121,7 +121,7 @@ local function AreAnyDown(...)
 			return true
 		end
 	end
-	
+
 	return false
 end
 
@@ -133,14 +133,14 @@ local function AreAllDown(...)
 			return false
 		end
 	end
-	
+
 	return true
 end
 
 -- Create Knit controller
 local InputController = Knit.CreateController {
     Name = "InputService";
-    
+
     IsDown = IsDown;
 	WereTapped = WereTapped;
 	WereAnyTapped = WereAnyTapped;
@@ -155,10 +155,10 @@ local InputController = Knit.CreateController {
 function InputController:Init()
 	self.Began = Signal.new()
 	self.Ended = Signal.new()
-	
+
 	UIS.InputBegan:Connect(function(Input, GameProcessed)
         if (GameProcessed) then return end
-        
+
 		local Type = Types[Input.UserInputType]
         if not (Type ~= "" and Type) then
             return nil
@@ -187,7 +187,7 @@ function InputController:Init()
 
         self.Began:Fire(Input, Key);
 	end)
-	
+
 	UIS.InputEnded:Connect(function(Input, GameProcessed)
         if GameProcessed then return nil end
 

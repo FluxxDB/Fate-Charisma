@@ -34,12 +34,12 @@ local RegionController = Knit.CreateController {
     Label = nil;
     Stroke = nil;
     LabelDuration = 3;
-    
+
     CurrentRegion = nil;
-    
+
     AmbienceList = nil;
     SongList = nil;
-    
+
     PlayingAmbience = nil;
     PlayingSong = nil;
 }
@@ -51,9 +51,9 @@ local tweenInfo = {
         EasingDirection = "In";
 
         StepType = "Heartbeat";
-        
+
         Goal = {
-            TextTransparency = 0; 
+            TextTransparency = 0;
             TextStrokeTransparency = 0.3;
         };
     };
@@ -63,7 +63,7 @@ local tweenInfo = {
         EasingDirection = "Out";
 
         StepType = "Heartbeat";
-        
+
         Goal = {
             TextTransparency = 1;
             TextStrokeTransparency = 1;
@@ -75,7 +75,7 @@ local tweenInfo = {
         EasingDirection = "In";
 
         StepType = "Heartbeat";
-        
+
         Goal = {
             ImageTransparency = 0.3;
         };
@@ -86,7 +86,7 @@ local tweenInfo = {
         EasingDirection = "Out";
 
         StepType = "Heartbeat";
-        
+
         Goal = {
             ImageTransparency = 1;
         };
@@ -97,7 +97,7 @@ local tweenInfo = {
         EasingDirection = "InOut";
 
         StepType = "Heartbeat";
-        
+
         Goal = {
             Volume = 1;
         };
@@ -108,7 +108,7 @@ local tweenInfo = {
         EasingDirection = "InOut";
 
         StepType = "Heartbeat";
-        
+
         Goal = {
             Volume = 0;
         };
@@ -161,7 +161,7 @@ end
 function RegionController:PlayMusic(Index, Name, Musics)
     -- Stop previous music
     self:StopMusic(Name)
-    
+
     -- Setup variables to be used in the loop
     local Sound = Musics[Index]
     local Volume = Sound.Volume
@@ -213,7 +213,7 @@ function RegionController:KnitStart()
 
     for _, Group in pairs(AreaMarkers:GetChildren()) do
         local zone = Zone.new(Group)
-        
+
         zone.playerAdded:Connect(function()
             if self.CurrentRegion == Group.Name then return end
             self.CurrentRegion = Group.Name
@@ -252,7 +252,7 @@ function RegionController:KnitStart()
                 end)
             end
 
-            
+
             local LabelTween = BoatTween:Create(self.Label, tweenInfo.LabelPlay)
             local StrokeTween = BoatTween:Create(self.Stroke, tweenInfo.StrokePlay)
             StrokeTween.Completed:Connect(function() StrokeTween:Destroy() end)
@@ -271,7 +271,7 @@ function RegionController:KnitStart()
                 LabelTween:Destroy()
             end)
 		end)
-        
+
         zone.playerDied:Connect(function()
             self:StopAll()
         end)
@@ -284,7 +284,7 @@ end
 function RegionController:KnitInit()
     local function ResetOnDeath(Character)
         local Humanoid = Character:WaitForChild("Humanoid")
-        
+
         Humanoid.Died:Connect(function()
             self.CurrentRegion = nil
             self:StopAll()

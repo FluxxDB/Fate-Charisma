@@ -24,7 +24,7 @@ local CharacterService = Knit.CreateService {
     Client = { Spawn = RemoteEvent.new(1, 5); };
 }
 
--- References for faster LookUp 
+-- References for faster LookUp
 local Client = CharacterService.Client
 
 -- Functions
@@ -53,7 +53,7 @@ end
 function CharacterService:KnitInit()
     Players = Knit.Services.PlayerService.Players
 
-    Players.PlayerAdded:Connect(function(Player)    
+    Players.PlayerAdded:Connect(function(Player)
         Player.CharacterAdded:Connect(function(Character)
             local Humanoid = Character:WaitForChild("Humanoid")
             

@@ -68,7 +68,7 @@ local function PlayerAdded(player)
     else
         -- The profile couldn't be loaded possibly due to other
         --   Roblox servers trying to load this profile at the same time:
-        player:Kick("The profile couldn't be loaded.") 
+        player:Kick("The profile couldn't be loaded.")
     end
 end
 

@@ -42,7 +42,7 @@ function LatencyService:KnitStart()
                 continue
             end
             if not Object.CanPing then continue end
-            
+
             Object.Pinged = tick()
             Object.CanPing = false
 

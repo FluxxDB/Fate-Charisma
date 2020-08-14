@@ -17,7 +17,7 @@ function Sequencer.new(Type, ...)
         Sequences = {},
         Finished = false
     }, Sequencer)
-    
+
     self:Update(Type, ...)
 	return self
 end
@@ -31,10 +31,10 @@ function Sequencer:Update(Type, ...)
     for _, Name in pairs(Sequences) do
         local SequenceName = Type .. Name
         if self.Sequences[SequenceName] ~= nil then
-        --or (not (PlayerData.Animator)) 
+        --or (not (PlayerData.Animator))
             return nil
         end
-        
+
         local SequenceFolder = SequenceType:FindFirstChild(Name)
         if not SequenceFolder then
             return nil
@@ -84,7 +84,7 @@ function Sequencer:Progress(Key)
     local Attack = Sequence.Attacks[Index]
     if Attack and not Input.WasAllTapped(0.3, unpack(Attack.Key)) and Sequence.Possible[Index] ~= nil then
         local Possible = Sequence.Possible[Index]
-        
+
         if Possible then
             local NewAttack = Possible.Attacks["1"]
             if NewAttack and table.find(NewAttack.Key, Key) and (Input.WasAllTapped(0.3, unpack(NewAttack.Key))) then
@@ -97,10 +97,10 @@ function Sequencer:Progress(Key)
     end
 
     if Attack and Input.WasAllTapped(0.3, unpack(Attack.Key)) then
-        
+
         self.Last = tick()
         local Length = Attack.Length
-        
+
         -- TS.map_forEach(PlayerData.Weapon.Hitboxes, function(Hitbox)
         --     Hitbox:HitStop()
         --     Hitbox:HitStart()

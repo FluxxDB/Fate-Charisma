@@ -32,7 +32,7 @@ function GetSequence(Type, Name)
     if Sequences[SequenceName] ~= nil then
         return Sequences[SequenceName]
     end
-    
+
     local SequenceFolder = SequenceType:FindFirstChild(Name)
     if not SequenceFolder then
         return nil

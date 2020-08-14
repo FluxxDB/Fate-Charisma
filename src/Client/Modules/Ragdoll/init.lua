@@ -4,7 +4,7 @@
 local PhysicsService = game:GetService("PhysicsService")
 PhysicsService:CreateCollisionGroup("Ragdoll")
 PhysicsService:CollisionGroupSetCollidable("Ragdoll", "Ragdoll", false)
- 
+
 local RagdollUtils = require(script.RagdollUtils)
 
 local Ragdoll = {}
@@ -16,13 +16,13 @@ function Ragdoll.new(humanoid)
 	assert(humanoid and humanoid:IsA("Humanoid"), "[Knit Ragdoll]: Humanoid must be Humanoid; got " .. type(humanoid))
 
 	local self = setmetatable({}, Ragdoll)
-	
+
 	self._obj = humanoid
 	self:_collideLimbs()
 	self._obj.BreakJointsOnDeath = false
 	self._obj.PlatformStand = true
 	self._obj:ChangeState(Enum.HumanoidStateType.Physics)
-	
+
 	self:StopAnimations()
 
 	self._maid:GiveTask(function()
@@ -103,7 +103,7 @@ function Ragdoll:_collideLimbs()
 		Character:FindFirstChild("Left Leg");
 		Character:FindFirstChild("Right Leg");
 	}
-	
+
 	for _, v in ipairs(Limbs) do
 		if v:IsA("BasePart") then
 			local Collider = Instance.new("Part")
@@ -112,7 +112,7 @@ function Ragdoll:_collideLimbs()
 			Collider.Transparency = 1
 			Collider.Size = Vector3.new(v.Size.X, v.Size.Y/2, v.Size.Z)
 			Collider.CFrame = v.CFrame - Vector3.new(0,v.Size.Y * .25, 0)
-			
+
 			local w = Instance.new("Weld")
 			w.Part0 = v
 			w.Part1 = Collider
@@ -120,7 +120,7 @@ function Ragdoll:_collideLimbs()
 			w.C1 = w.Part1.CFrame:toObjectSpace(w.Part0.CFrame)
 			w.Parent = Collider
 			Collider.Parent = v
-			
+
 			self._maid:GiveTask(Collider)
 		end
 	end
