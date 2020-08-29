@@ -240,18 +240,10 @@ function Animator:UpdateMovement(LocalVelocity)
     end
 
     if Speed < 1 then
-        for Name, Animation in pairs(Animations.Movement[Stance]) do
-			local State	= string.match(Name, "^" .. Stance .. "_(.+)")
-
-			if State then
-				if State == "Idle" then
-					if not Animation.IsPlaying then
-						Animation:Play()
-					end
-				else
-					if Animation.IsPlaying then
-						Animation:Stop()
-					end
+        for State, Animation in pairs(Animations.Movement[Stance]) do
+			if State == "Idle" then
+				if not Animation.IsPlaying then
+					Animation:Play()
 				end
 			else
 				if Animation.IsPlaying then
