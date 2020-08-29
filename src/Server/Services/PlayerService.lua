@@ -10,6 +10,8 @@ local ProfileService = require(Modules.ProfileService)
 local PlayerObject = require(Modules.PlayerObject)
 local RemoteEvent = require(Util.Remote.RemoteEvent)
 
+-- Variables
+local Flood
 
 -- Create Knit Service
 local PlayerService = Knit.CreateService {
@@ -33,12 +35,8 @@ local Client  = PlayerService.Client
 local GameProfileStore = ProfileService.GetProfileStore(
     "PlayerData",
     {
-        Cens = 0;
-
         Inv = {};
-        Skills = {};
-        Customization = {};
-        Model = "";
+        Equipped = {};
 
         Options = {
             Ragdolls = true;
@@ -49,18 +47,19 @@ local GameProfileStore = ProfileService.GetProfileStore(
 
 local function PlayerAdded(player)
     local profile = GameProfileStore:LoadProfileAsync(
-        "Player_" .. player.UserId,
+        "Player" .. player.UserId,
         "ForceLoad"
     )
     if profile ~= nil then
         profile:ListenToRelease(function()
-            PlayerService.Players[player] = nil
+            Players[player] = nil
             -- The profile could've been loaded on another Roblox server:
             player:Kick("The profile couldn't be loaded.")
         end)
+
         if player:IsDescendantOf(PlayersService) then
             local Player = PlayerObject.new(player, profile)
-            PlayerService.Players[player] = Player
+            Players[player] = Player
         else
             -- Player left before the profile loaded:
             profile:Release()
@@ -76,12 +75,16 @@ end
 -- Start
 function PlayerService:KnitStart()
     Client.Ready:Connect(function(Player)
+        if Players[Player] then return end
+        Players[Player] = {}
         PlayerAdded(Player)
     end)
 end
 
 -- Initialize
 function PlayerService:KnitInit()
+    Flood = Knit.Services.FloodService
+
     -- Clean up data when player leaves:
     game:GetService("Players").PlayerRemoving:Connect(function(Player)
         local Object = Players[Player]

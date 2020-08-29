@@ -72,7 +72,7 @@ end
 
 function KnitClient.GetService(serviceName)
 	assert(type(serviceName) == "string", "ServiceName must be a string; got " .. type(serviceName))
-	local folder = servicesFolder:FindFirstChild(serviceName)
+	local folder = servicesFolder:WaitForChild(serviceName, 5)
 	assert(folder ~= nil, "Could not find service \"" .. serviceName .. "\"")
 	return services[serviceName] or BuildService(serviceName, folder)
 end

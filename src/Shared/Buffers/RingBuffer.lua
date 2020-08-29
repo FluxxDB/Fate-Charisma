@@ -1,15 +1,21 @@
 local RingBuffer = {}
 RingBuffer.__index = RingBuffer
 
-function RingBuffer.new(Size)
+function RingBuffer.new(Size, Callback)
 	assert(Size, "Cannot create RingBuffer with nil")
 	assert(Size > 0, "Cannot create RingBuffer to Size < 1")
-
-	return setmetatable({
+	
+	local self = setmetatable({
 		Data = {};
 		Size = 0;
 		MaxSize = Size;
 	}, RingBuffer)
+
+	if Callback and type(Callback) then
+		self.insert = Callback
+	end
+
+	return self
 end
 
 function RingBuffer.insert(Object, Value)

@@ -1,4 +1,5 @@
 local ControllersToLoad = {
+    "CharacterController";
     "LatencyController";
     "InputController";
 }
@@ -19,6 +20,8 @@ end
 Knit.Start():andThen(function()
     print("[Knit Client]: Started")
     Knit.GetService("PlayerService").Ready:Fire()
+    wait(1)
+    Knit.GetService("CharacterService").Spawn:Fire("R6")
     print("Requested Character.")
 end):catch(function(err)
     warn("[Knit Client]: Failed to initialize")

@@ -152,7 +152,7 @@ local InputController = Knit.CreateController {
 	AreAnyDown = AreAnyDown;
 }
 
-function InputController:Init()
+function InputController:KnitInit()
 	self.Began = Signal.new()
 	self.Ended = Signal.new()
 

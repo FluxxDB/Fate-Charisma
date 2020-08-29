@@ -2,7 +2,7 @@
 -- Stephen Leitnick
 
 --[[
-	
+
 	[Server]
 		event = RemoteEvent.new()
 		event:Fire(player, ...)
@@ -28,7 +28,6 @@
 local IS_SERVER = game:GetService("RunService"):IsServer()
 
 local players = game:GetService("Players")
-local FloodCheck = require(script.Parent.Parent.FloodCheck)
 
 local RemoteEvent = {}
 RemoteEvent.__index = RemoteEvent
@@ -38,22 +37,10 @@ function RemoteEvent.Is(object)
 end
 
 if (IS_SERVER) then
-	function RemoteEvent.new(Limit, Time)
-		local remote = Instance.new("RemoteEvent")
 
-		local limit = Instance.new("NumberValue")
-		limit.Name = "Limit"
-		limit.Value = Limit or 10
-		limit.Parent = remote
-		local time = Instance.new("NumberValue")
-		time.Name = "Time"
-		time.Value = Time or 1
-		time.Parent = remote
-
+	function RemoteEvent.new()
 		local self = setmetatable({
-			_remote = remote;
-			_limit = limit.Value;
-			_time = time.Value;
+			_remote = Instance.new("RemoteEvent");
 		}, RemoteEvent)
 		return self
 	end
@@ -79,13 +66,7 @@ if (IS_SERVER) then
 	end
 
 	function RemoteEvent:Connect(handler)
-		return self._remote.OnServerEvent:Connect(function(Player, ...)
-			if not FloodCheck(Player, self._limit, self._time, self._remote.Name .. "Remote") then 
-				warn("[Knit Rate]: Rate limit for " .. Player.Name)
-				return 
-			end
-			handler(Player, ...)
-		end)
+		return self._remote.OnServerEvent:Connect(handler)
 	end
 
 	function RemoteEvent:Destroy()
@@ -94,7 +75,6 @@ if (IS_SERVER) then
 	end
 
 else
-	local Player = players.LocalPlayer
 
 	local Connection = {}
 	Connection.__index = Connection
@@ -140,18 +120,12 @@ else
 		assert(remoteEvent:IsA("RemoteEvent"), "Argument #1 (RemoteEvent) expected RemoteEvent; got" .. remoteEvent.ClassName)
 		local self = setmetatable({
 			_remote = remoteEvent;
-			_limit = remoteEvent.Limit.Value;
-			_time = remoteEvent.Time.Value;
 			_connections = {};
 		}, RemoteEvent)
 		return self
 	end
 
 	function RemoteEvent:Fire(...)
-		if not FloodCheck(Player, self._limit, self._time, self._remote.Name .. "Remote") then 
-			warn("[Knit Rate]: Rate limit for " .. Player.Name)
-			return 
-		end
 		self._remote:FireServer(...)
 	end
 

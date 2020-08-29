@@ -6,7 +6,7 @@ return function (Player, RateValue,	 TimeValue, Unique_Identifier)
 	local Identifier = Unique_Identifier
 
 	local Player_Object = Requests[Player]
-	
+
 	if not Player_Object then
 		local Connection
 		Connection = Player.AncestryChanged:Connect(function(Parent)
@@ -15,7 +15,7 @@ return function (Player, RateValue,	 TimeValue, Unique_Identifier)
 				Connection:Disconnect()
 			end
 		end)
-		
+
 		Requests[Player] = {}
 		Player_Object = Requests[Player]
 	end
@@ -25,7 +25,7 @@ return function (Player, RateValue,	 TimeValue, Unique_Identifier)
 	end
 
 	Player_Object = Player_Object[Identifier]
-	
+
 	if Rate > Time then
 		if Player_Object.Count then
 			local TimeElapsed = tick() - Player_Object.StartTime 

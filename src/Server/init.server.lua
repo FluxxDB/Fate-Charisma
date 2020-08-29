@@ -1,6 +1,8 @@
 local ServicesToLoad = {
     "PlayerService";
+    "CharacterService";
     "LatencyService";
+    "FloodService";
     -- "SequenceService";
 }
 
