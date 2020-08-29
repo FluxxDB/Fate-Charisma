@@ -72,14 +72,23 @@ local Load = {
 		local Humanoid = Object.Humanoid
 		local LoadedAnimations = {}
 		
-		for _, Sequence in ipairs(Folder:GetChildren()) do
-			for _, Animation in ipairs(Sequence:GetChildren()) do
-				local Track = Humanoid:LoadAnimation(Animation)
-				LoadedAnimations[Animation.Name] = Track
+		for _, Animation in ipairs(Folder:GetChildren()) do
+			if not Animation:IsA("Animation") then continue end
+			local Track = Humanoid:LoadAnimation(Animation)
+
+			local Markers = Animation:FindFirstChild("Markers")
+			if Markers then
+				require(Markers)(Track)
 			end
+
+			LoadedAnimations[Folder.Name .. Animation.Name] = Track
 		end
 
-		Object.Animations["Sequence" .. Folder.Name] = LoadedAnimations
+		if Object.Animations[Folder.Parent.Name] then
+			Object.Animations[Folder.Parent.Name] = TableUtil.Assign(Object.Animations[Folder.Parent.Name], LoadedAnimations)
+		else
+			Object.Animations[Folder.Parent.Name] = LoadedAnimations
+		end
 	end;
 }
 
@@ -206,10 +215,10 @@ function Animator:StopAll()
 end
 
 
-function Animator:LoadAnimation(Folder)
+function Animator:LoadAnimation(Folder, Type)
 	if not Folder then return end
 
-	local Loader = Load[Folder.Name]
+	local Loader = Load[Type or Folder.Name]
 	if not Loader then
 		Load.Default(self, Folder)
 		return

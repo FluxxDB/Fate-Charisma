@@ -6,17 +6,28 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Input = Knit.Controllers.InputController
 local CharacterController = Knit.Controllers.CharacterController
 
+-- Require Modules
+local Util = Knit.Util
+local Thread = require(Util.Thread)
+
+
 -- Variables
-local SequencesFolder = ReplicatedStorage.Assets.Sequences
+local Player = Knit.Player
+local Assets = ReplicatedStorage:WaitForChild("Assets")
+local SequencesFolder = Assets:WaitForChild("Sequences")
+
+
+-- Class
 local Sequencer = {}
 Sequencer.__index = Sequencer
 
--- Functions
+
 function Sequencer.new(Type, ...)
     local self = setmetatable({
         Index = 1,
         Sequences = {},
-        Finished = false
+        Finished = false,
+        Animator = CharacterController:Get(Player.Character),
     }, Sequencer)
 
     self:Update(Type, ...)
@@ -26,30 +37,30 @@ end
 function Sequencer:Update(Type, ...)
     local Sequences = { ... }
     local SequenceType = SequencesFolder:FindFirstChild(Type)
-    if not SequenceType then
-        return nil
-    end
+    if not SequenceType then return end
+
     for _, Name in pairs(Sequences) do
         local SequenceName = Type .. Name
-        if self.Sequences[SequenceName] ~= nil then
-        --or (not (PlayerData.Animator))
-            return nil
+        if self.Sequences[SequenceName] ~= nil 
+          or not self.Animator
+        then
+            warn("Sequence either exists or animator stopped working")
+            continue
         end
 
         local SequenceFolder = SequenceType:FindFirstChild(Name)
         if not SequenceFolder then
-            return nil
+            warn("Sequence folder not found")
+            continue
         end
 
         local Info = SequenceFolder:FindFirstChild("Info")
-        if not Info then
-            return nil
+        if not Info then 
+            warn("Sequence Info not found")
+            continue
         end
 
-        local Animator = CharacterController:Get(Knit.Player.Character)
-        if not Animator then return end
-        Animator:LoadAnimations(SequenceFolder, SequenceName)
-
+        self.Animator:LoadAnimations(SequenceFolder, "Sequences")
         self.Sequences[SequenceName] = require(Info)
     end
 end
@@ -58,7 +69,7 @@ function Sequencer:GetSequence(Key)
     local NewSequence
     for _, Sequence in pairs(self.Sequences) do
         if self.CurrSequence or not Sequence.IsStarter then
-            return nil
+            return
         end
 
         local Attack = Sequence.Attacks["1"]
@@ -72,16 +83,13 @@ function Sequencer:GetSequence(Key)
 end
 
 function Sequencer:Progress(Key)
-    --[[
-    if not (PlayerData.Animator)) or (not (PlayerData.Weapon)) or (Cache:HasAnyKey(unpack(ValidArgs)) then
-        return nil;
-    end;
-    --]]
+    if not self.Animator then return end
+
     local Sequence = self.CurrSequence
     if not Sequence then
         Sequence = self:GetSequence(Key)
         if not Sequence then
-            return nil
+            return
         end
     end
 
@@ -103,22 +111,11 @@ function Sequencer:Progress(Key)
 
     if Attack and Input.WasAllTapped(0.3, unpack(Attack.Key)) then
         self.Last = tick()
-        local Length = Attack.Length
         local Animator = CharacterController:Get(Knit.Player.Character)
         if not Animator then return end
-        Animator:Play()
+        Animator:Play(Sequence.Type, Sequence.Name..Index)
 
-        -- TS.map_forEach(PlayerData.Weapon.Hitboxes, function(Hitbox)
-        --     Hitbox:HitStop()
-        --     Hitbox:HitStart()
-        --     delay(Length, function()
-        --         if tostring(self.Index - 1) == Index then
-        --             Hitbox:HitStop()
-        --         end
-        --     end)
-        -- end)
-
-        delay(1.5, function()
+        Thread.Delay(1.5, function()
             if not (self.Finished) and (tick() - self.Last >= 1) then
                 self.CurrSequence = nil
                 self.Last = nil
