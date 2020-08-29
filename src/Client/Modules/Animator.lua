@@ -23,11 +23,18 @@ local Load = {
 		local LoadedAnimations = {}
 	
 		for _, Animation in ipairs(Folder:GetChildren()) do
-			LoadedAnimations[Animation.Name] = Humanoid:LoadAnimation(Animation)
-			
+			local Track = Humanoid:LoadAnimation(Animation)
+
 			if string.match(Animation.Name, "Damage") then
 				Object.DamageCount = Object.DamageCount + 1
 			end
+			
+			local Markers = Animation:FindFirstChild("Markers")
+			if Markers then
+				require(Markers)(Track)
+			end
+
+			LoadedAnimations[Animation.Name] = Track
 		end
 	
 		if Object.Animations[Folder.Name] then
@@ -37,7 +44,7 @@ local Load = {
 		end
 	end;
 	
-	Movement = function(Object, Folder)
+	Movements = function(Object, Folder)
 		local Humanoid = Object.Humanoid
         local LoadedAnimations = {}
         
@@ -59,6 +66,20 @@ local Load = {
 		end
 	
 		Object.Animations[Folder.Name] = LoadedAnimations
+	end;
+
+	Sequences = function(Object, Folder)
+		local Humanoid = Object.Humanoid
+		local LoadedAnimations = {}
+		
+		for _, Sequence in ipairs(Folder:GetChildren()) do
+			for _, Animation in ipairs(Sequence:GetChildren()) do
+				local Track = Humanoid:LoadAnimation(Animation)
+				LoadedAnimations[Animation.Name] = Track
+			end
+		end
+
+		Object.Animations["Sequence" .. Folder.Name] = LoadedAnimations
 	end;
 }
 
@@ -188,12 +209,13 @@ end
 function Animator:LoadAnimation(Folder)
 	if not Folder then return end
 
-	if not Load[Folder.Name] then
+	local Loader = Load[Folder.Name]
+	if not Loader then
 		Load.Default(self, Folder)
 		return
 	end
 	
-	Load[Folder.Name](self, Folder)
+	Loader(self, Folder)
 end
 
 
@@ -215,11 +237,11 @@ function Animator:SetStance(NewStance)
 		self.Stance	= NewStance
 		
 		if OldStance == "Falling" then
-			self.Animations.Movement.Falling:Stop()
+			self.Animations.Movements.Falling:Stop()
 			return
 		end
 
-		for _, animation in pairs(self.Animations.Movement[OldStance]) do
+		for _, animation in pairs(self.Animations.Movements[OldStance]) do
 			animation:Stop()
 		end
 	end
@@ -240,7 +262,7 @@ function Animator:UpdateMovement(LocalVelocity)
     end
 
     if Speed < 1 then
-        for State, Animation in pairs(Animations.Movement[Stance]) do
+        for State, Animation in pairs(Animations.Movements[Stance]) do
 			if State == "Idle" then
 				if not Animation.IsPlaying then
 					Animation:Play()
@@ -256,7 +278,7 @@ function Animator:UpdateMovement(LocalVelocity)
     end
 
     local Unit = LocalVelocity.Unit
-	for State, Animation in pairs(Animations.Movement[Stance]) do
+	for State, Animation in pairs(Animations.Movements[Stance]) do
         if not State then
             if Animation.IsPlaying then
                 Animation:Stop()
@@ -315,7 +337,7 @@ function Animator:Update()
 	end
 	
 	if OnAir then
-        local Movement = self.Animations.Movement
+        local Movement = self.Animations.Movements
         if not Movement then return end
 
 		local Fall = Movement.Falling

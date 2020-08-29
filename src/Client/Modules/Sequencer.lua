@@ -4,6 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Require Controllers
 local Input = Knit.Controllers.InputController
+local CharacterController = Knit.Controllers.CharacterController
 
 -- Variables
 local SequencesFolder = ReplicatedStorage.Assets.Sequences
@@ -44,7 +45,11 @@ function Sequencer:Update(Type, ...)
         if not Info then
             return nil
         end
-        --PlayerData.Animator:LoadAnimations(SequenceFolder, SequenceName)
+
+        local Animator = CharacterController:Get(Knit.Player.Character)
+        if not Animator then return end
+        Animator:LoadAnimations(SequenceFolder, SequenceName)
+
         self.Sequences[SequenceName] = require(Info)
     end
 end
@@ -97,9 +102,11 @@ function Sequencer:Progress(Key)
     end
 
     if Attack and Input.WasAllTapped(0.3, unpack(Attack.Key)) then
-
         self.Last = tick()
         local Length = Attack.Length
+        local Animator = CharacterController:Get(Knit.Player.Character)
+        if not Animator then return end
+        Animator:Play()
 
         -- TS.map_forEach(PlayerData.Weapon.Hitboxes, function(Hitbox)
         --     Hitbox:HitStop()

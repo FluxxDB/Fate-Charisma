@@ -53,6 +53,8 @@ function RenderVisual(Model, IsPlayer)
         local Part1 = IsR6:FindFirstChild("Part1")
         Part1 = Model:FindFirstChild(Part1.Value)
 
+        Humanoid.HipHeight = 0
+
         IsR6.Part0 = HRP
         IsR6.Part1 = Part1
     else
@@ -72,6 +74,10 @@ function RenderVisual(Model, IsPlayer)
     Model.AncestryChanged:Connect(function()
         Models[Model] = nil
     end)
+end
+
+function CharacterController:Get(Model)
+    return Models[Model]
 end
 
 
@@ -95,7 +101,7 @@ function CharacterController:KnitStart()
 
     Thread.DelayRepeat(1/14, function()
         for Model, Animator in pairs(Models) do
-            if type(Model) == "boolean" then continue end
+            if type(Animator) == "boolean" then continue end
             Animator:Update()
         end
     end)
