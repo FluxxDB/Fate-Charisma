@@ -7,12 +7,14 @@ local Util = Knit.Util
 local Modules = Knit.Modules
 local Thread = require(Util.Thread)
 local AnimatorClass = require(Modules.Animator)
+local Signal = require(Util.Signal)
 
 
 -- Variables
 local Player = Knit.Player
 local Camera = workspace.CurrentCamera
 local EntitiesFolder =  workspace:WaitForChild("Entities")
+local CharacterAdded = Signal.new()
 
 local Models = {}
 
@@ -20,6 +22,7 @@ local Models = {}
 -- Create Knit controller
 local CharacterController = Knit.CreateController {
     Name = "CharacterController";
+    CharacterAdded = CharacterAdded;
 }
 
 
@@ -70,6 +73,8 @@ function RenderVisual(Model, IsPlayer)
     else
         Models[Model] = AnimatorClass.new(Model)
     end
+    
+    CharacterAdded:Fire(Model)
 
     Model.AncestryChanged:Connect(function()
         Models[Model] = nil

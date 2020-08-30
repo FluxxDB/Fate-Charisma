@@ -1,4 +1,5 @@
 local ControllersToLoad = {
+    "WeaponController";
     "CharacterController";
     "LatencyController";
     "InputController";
