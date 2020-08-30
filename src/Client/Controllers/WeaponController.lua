@@ -44,17 +44,17 @@ local function addWeapon(Limb, Weapon)
     end
 end
 
-local function Equip(Tool, Character)
+local function Equip(Character, Tool)
     local Model = Tool:FindFirstChild("Model")
-    if not (Model and Model:IsA("ObjectValue")) then return end
+    if not Model then return end
 
-    local WeaponModel = Model.Value
-    local ConfigModule = WeaponModel.Parent
-    if not (ConfigModule and ConfigModule:IsA("ModuleScript")) then return end
+    local ConfigModule = Model.Value
+    if not ConfigModule then return end
 
     local Config = require(ConfigModule)
     local Holder = GetOrCreate("Weapons", "Folder", Character)
-    for Name, Part in ipairs(Config.Parts) do
+    
+    for Name, Part in pairs(Config.Parts) do
         local Limb = Character:FindFirstChild(Name)
         if not Limb then continue end
         
@@ -65,6 +65,7 @@ local function Equip(Tool, Character)
 
     local Connection
     Connection = Tool.AncestryChanged:Connect(function()
+		if Tool.Parent == Character then return end
         Holder:Destroy()
         Connection:Disconnect()
     end)
@@ -74,9 +75,11 @@ end
 -- Start
 function WeaponController:KnitStart()
     CharacterController.CharacterAdded:Connect(function(Character)
+        print("Character added.", Character)
+
         Character.ChildAdded:Connect(function(Tool)
             if not Tool:IsA("Tool") then return end
-			return Equip(Tool, Character)
+			return Equip(Character, Tool)
         end)
     end)
 end
