@@ -60,7 +60,7 @@ function Sequencer:Update(Type, ...)
             continue
         end
 
-        self.Animator:LoadAnimations(SequenceFolder, "Sequences")
+        self.Animator:LoadAnimation(SequenceFolder, "Sequences")
         self.Sequences[SequenceName] = require(Info)
     end
 end
