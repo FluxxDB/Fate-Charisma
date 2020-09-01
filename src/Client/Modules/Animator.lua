@@ -1,4 +1,4 @@
--- Servicees
+	-- Servicees
 local Knit = _G.KnitClient
 
 
@@ -31,7 +31,7 @@ local Load = {
 			
 			local Markers = Animation:FindFirstChild("Markers")
 			if Markers then
-				require(Markers)(Track)
+				require(Markers)(Humanoid, Track)
 			end
 
 			LoadedAnimations[Animation.Name] = Track
@@ -82,8 +82,9 @@ local Load = {
 			end
 
 			LoadedAnimations[Folder.Name .. Animation.Name] = Track
-		end
 
+		end
+		
 		if Object.Animations[Folder.Parent.Name] then
 			Object.Animations[Folder.Parent.Name] = TableUtil.Assign(Object.Animations[Folder.Parent.Name], LoadedAnimations)
 		else

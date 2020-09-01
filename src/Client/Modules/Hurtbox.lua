@@ -27,7 +27,10 @@ return function(CFrame, Size, Debug)
     Hurtbox.CFrame = CFrame
     Hurtbox.Transparency = 1
     Hurtbox.CanCollide = false
-    Hurtbox.Color = BrickColor.new("Bright red")
+    Hurtbox.Anchored = true
+    Hurtbox.BrickColor = BrickColor.new("Bright red")
+    Hurtbox.BottomSurface = Enum.SurfaceType.Smooth
+    Hurtbox.TopSurface = Enum.SurfaceType.Smooth
     Hurtbox.Parent = workspace
     
     return GetTouchingParts(Hurtbox, Debug)
