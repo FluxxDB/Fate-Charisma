@@ -19,7 +19,7 @@ local Spawns = Map.Spawns:GetChildren()
 
 local Characters = workspace.Entities.Characters
 local EntitiesStorage = ServerStorage.Entities
-
+local LoadedTools = {}
 
 local StateType = Enum.HumanoidStateType
 local DisabledStates = {
@@ -67,6 +67,25 @@ function CharacterService:KnitStart()
         if not Model or not Model.PrimaryPart then return end
         Model = Model:Clone()
         Model:SetPrimaryPartCFrame(Spawns[Rng:NextInteger(1, #Spawns)].CFrame)
+
+        Model.ChildAdded:Connect(function(Child)
+            if not Child:IsA("Tool") then return end
+
+            local Module = Child:FindFirstChild("Module")
+            if not Module or not Module.Value then return end
+
+            local Tool = LoadedTools[Model.Value]
+            if not Tool then
+                Tool = require(Model.Value)
+                LoadedTools[Model.Value] = Tool
+            end
+            Object.Tool = Tool
+        end)
+        
+        Model.ChildRemoved:Connect(function(Tool)
+            if not Tool:IsA("Tool") then return end
+            Object.Tool = nil
+        end)
 
         local Humanoid = Model:FindFirstChild("Humanoid")
         for _, State in ipairs(DisabledStates) do

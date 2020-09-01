@@ -45,10 +45,10 @@ local function addWeapon(Limb, Weapon)
 end
 
 local function Equip(Character, Tool)
-    local Model = Tool:FindFirstChild("Model")
-    if not Model then return end
+    local Module = Tool:FindFirstChild("Module")
+    if not Module then return end
 
-    local ConfigModule = Model.Value
+    local ConfigModule = Module.Value
     if not ConfigModule then return end
 
     local Config = require(ConfigModule)
