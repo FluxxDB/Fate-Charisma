@@ -60,7 +60,7 @@ function Sequencer:Update(Type, ...)
             continue
         end
 
-        self.Animator:LoadAnimations(SequenceFolder, "Sequences")
+        self.Animator:LoadAnimation(SequenceFolder, "Sequences")
         self.Sequences[SequenceName] = require(Info)
     end
 end
@@ -69,9 +69,9 @@ function Sequencer:GetSequence(Key)
     local NewSequence
     for _, Sequence in pairs(self.Sequences) do
         if self.CurrSequence or not Sequence.IsStarter then
-            return
+            continue
         end
-
+        
         local Attack = Sequence.Attacks["1"]
         if Attack and table.find(Attack.Key, Key) and Input.WasAllTapped(0.3, unpack(Attack.Key)) then
             NewSequence = Sequence
@@ -92,10 +92,10 @@ function Sequencer:Progress(Key)
             return
         end
     end
-
+    
     local Index = tostring(self.Index)
     local Attack = Sequence.Attacks[Index]
-    if Attack and not Input.WasAllTapped(0.3, unpack(Attack.Key)) and Sequence.Possible[Index] ~= nil then
+    if Attack and not Input.WasAllTapped(0.3, unpack(Attack.Key)) and Sequence.Possible[Index] then
         local Possible = Sequence.Possible[Index]
 
         if Possible then
@@ -104,6 +104,8 @@ function Sequencer:Progress(Key)
                 self.Index = 1
                 self.Last = nil
                 self.CurrSequence = Possible
+                Sequence = Possible
+                Index = "1"
                 Attack = NewAttack
             end
         end
@@ -114,9 +116,8 @@ function Sequencer:Progress(Key)
         local Animator = CharacterController:Get(Knit.Player.Character)
         if not Animator then return end
         Animator:Play(Sequence.Type, Sequence.Name..Index)
-
         Thread.Delay(1.5, function()
-            if not (self.Finished) and (tick() - self.Last >= 1) then
+            if not (self.Finished) and self.Last and (tick() - self.Last >= 1) then
                 self.CurrSequence = nil
                 self.Last = nil
             end

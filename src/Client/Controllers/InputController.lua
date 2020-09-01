@@ -139,7 +139,7 @@ end
 
 -- Create Knit controller
 local InputController = Knit.CreateController {
-    Name = "InputService";
+    Name = "InputController";
 
     IsDown = IsDown;
 	WereTapped = WereTapped;
