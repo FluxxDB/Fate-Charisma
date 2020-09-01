@@ -7,13 +7,17 @@ local PlayerService = game:GetService("Players")
 local Util = Knit.Util
 local RemoteEvent = require(Util.Remote.RemoteEvent)
 local Sequencer = require(Util.Sequencer)
+local Thread = require(Util.Thread)
 
 -- Create Knit Service
 local SequenceService = Knit.CreateService {
     Name = "SequenceService";
 
     -- Client exposed events:
-    Client = { Hit = RemoteEvent.new(2, 1); };
+    Client = { 
+        Start = RemoteEvent.new();
+        Hit = RemoteEvent.new(); 
+    };
 }
 
 -- References for faster LookUp
@@ -49,38 +53,59 @@ end
 
 -- Start
 function SequenceService:KnitStart()
-    SequenceService.Client.Hit:Connect(function(Player, Hit, SequenceName, Index)
+    SequenceService.Client.Start:Connect(function(Player, SequenceName, Index)
         local PlayerObject = Players[Player]
         if not PlayerObject or
-            not PlayerObject.Tool or
-            not Hit or
-            not Hit.Parent or
-            not Hit.PrimaryPart
+            not PlayerObject.Tool
         then
             return
         end
-
+    
         local LAttack = PlayerObject.LastAttack
         local LIndex = PlayerObject.LastIndex
         local Sequence = GetSequence(PlayerObject.Tool.Type, SequenceName)
-
+    
         if not Sequence or
             not LAttack and (Index > 1 or not Sequence.IsStarter) or
             not (LAttack == Sequence and LIndex == Index - 1)
          then
             return
         end
-
+    
         if LAttack ~= Sequence then
             local Invalid = true
-
+    
             for Number, Possible in pairs(LAttack.Possible) do
                 if Possible == Sequence and Number == LIndex and Index == 1 then
                     Invalid = false
                 end
             end
-
+    
             if Invalid then return end
+        end
+        local Attack = Sequence.Attacks[Index]
+
+        PlayerObject.LastAttack = Sequence
+        PlayerObject.LastIndex = Index
+        PlayerObject.Attack = {
+            Attack = Attack;
+            Ended = false;
+            Hits = {};
+        }
+
+        Thread.Delay(Attack.Cooldown, function()
+            PlayerObject.Attack.Ended = true
+        end)
+    end)
+    
+    SequenceService.Client.Hit:Connect(function(Player, Hit)
+        local PlayerObject = Players[Player]
+        if not PlayerObject or
+            not PlayerObject.Tool or
+            not PlayerObject.Attack or
+            PlayerObject.Attack.Ended
+        then
+            return
         end
 
         local IsPlayer = PlayerService:GetPlayerFromCharacter(Hit)
@@ -91,9 +116,6 @@ function SequenceService:KnitStart()
                 return
             end
         end
-
-        PlayerObject.LastAttack = Sequence
-        PlayerObject.LastIndex = Index
     end)
 end
 

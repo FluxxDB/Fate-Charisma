@@ -78,7 +78,7 @@ local Load = {
 
 			local Markers = Animation:FindFirstChild("Markers")
 			if Markers then
-				require(Markers)(Track)
+				require(Markers)(Humanoid, Track)
 			end
 
 			LoadedAnimations[Folder.Name .. Animation.Name] = Track
