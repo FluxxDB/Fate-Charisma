@@ -70,15 +70,16 @@ function CharacterService:KnitStart()
 
         Model.ChildAdded:Connect(function(Child)
             if not Child:IsA("Tool") then return end
-
-            local Module = Child:FindFirstChild("Module")
-            if not Module or not Module.Value then return end
-
             local Tool = LoadedTools[Model.Value]
+
             if not Tool then
+                local Module = Child:FindFirstChild("Module")
+                if not Module or not Module.Value then return end
+
                 Tool = require(Model.Value)
                 LoadedTools[Model.Value] = Tool
             end
+
             Object.Tool = Tool
         end)
         
