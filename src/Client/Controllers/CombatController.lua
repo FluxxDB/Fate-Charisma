@@ -28,7 +28,7 @@ local function Dash()
         Animator:Play("Actions", "DashBackward")
     end
     
-    SetKey("Dash", 1)
+    SetKey("Dash", 0.7)
 end
 
 -- Start

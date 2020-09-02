@@ -113,7 +113,7 @@ function SequenceService:KnitStart()
             Attack.Ended = true
         end)
 
-        Thread.Delay(Length + 1.5 - Ping, function()
+        Thread.Delay(Length + 1.5 + Ping, function()
             local Attack = PlayerObject.Attack
             if not Attack or Move ~= Attack.Move then return end
 
