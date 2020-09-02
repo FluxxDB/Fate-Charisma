@@ -3,8 +3,10 @@ local Knit = _G.KnitClient
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Require Controllers
-local Input = Knit.Controllers.InputController
-local CharacterController = Knit.Controllers.CharacterController
+local Controllers = Knit.Controllers
+local Input = Controllers.InputController
+local PlayerController = Controllers.PlayerController
+local CharacterController = Controllers.CharacterController
 
 -- Require Modules
 local Util = Knit.Util
@@ -13,6 +15,7 @@ local Thread = require(Util.Thread)
 
 -- Variables
 local Player = Knit.Player
+local SetKey = PlayerController.SetKey
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local SequencesFolder = Assets:WaitForChild("Sequences")
 
@@ -113,10 +116,9 @@ function Sequencer:Progress(Key)
 
     if Attack and Input.WasAllTapped(0.3, unpack(Attack.Key)) then
         self.Last = tick()
-        local Animator = CharacterController:Get(Knit.Player.Character)
-        if not Animator then return end
-        Animator:Play(Sequence.Type, Sequence.Name..Index)
-        Thread.Delay(1.5, function()
+        self.Animator:Play(Sequence.Type, Sequence.Name..Index)
+
+        Thread.Delay(Attack.Length + Attack.Cooldown + 1.4, function()
             if not (self.Finished) and self.Last and (tick() - self.Last >= 1) then
                 self.CurrSequence = nil
                 self.Last = nil
@@ -131,6 +133,8 @@ function Sequencer:Progress(Key)
         else
             self.Finished = false
         end
+
+        SetKey("Attack", Attack.Cooldown + Attack.Length)
         return Attack
     end
 end

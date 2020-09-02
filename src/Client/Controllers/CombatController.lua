@@ -7,6 +7,8 @@ local PlayerController
 
 -- Variables
 local Player = Knit.Player
+local SetKey
+local HasKey
 
 -- Create Knit controller
 local CombatController = Knit.CreateController {
@@ -25,20 +27,22 @@ local function Dash()
     elseif Direction.Z > 0 then
         Animator:Play("Actions", "DashBackward")
     end
+    
+    SetKey("Dash", 1)
 end
 
 -- Start
 function CombatController:KnitStart()
-    Input.Began:Connect(function(InputObject, Key)
+    Input.Began:Connect(function(_, Key)
         if not (Key or Player.Character) then return end
+        if HasKey("Dash") or HasKey("Attack") then return end
+
         if Input.IsDown("V") and Input.AreAnyDown("W", "S") then
             return Dash()
         end
         
-        if not PlayerController.Weapon or PlayerController:HasKey("Attack") then return end
-        local Attack = PlayerController.Weapon:Progress(Key)
-        if not Attack then return end
-        PlayerController:SetKey("Attack", Attack.Cooldown + Attack.Length)
+        if not PlayerController.Weapon then return end
+        PlayerController.Weapon:Progress(Key)
     end)
 end
 
@@ -47,6 +51,9 @@ function CombatController:KnitInit()
     Input = Controllers.InputController
     CharacterController = Controllers.CharacterController
     PlayerController = Controllers.PlayerController
+
+    SetKey = PlayerController.SetKey
+    HasKey = PlayerController.HasKey
 end
 
 return CombatController

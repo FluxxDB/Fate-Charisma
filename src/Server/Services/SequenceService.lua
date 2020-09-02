@@ -57,8 +57,8 @@ function SequenceService:KnitStart()
 
         local PlayerObject = Players[Player]
         if not PlayerObject or 
-            not Index 
-            -- PlayerObject.Attack and not PlayerObject.Attack.Ended
+            not Index or
+            PlayerObject:HasKey("Attack")
         then
             return
         end
@@ -93,7 +93,12 @@ function SequenceService:KnitStart()
             if Invalid then return end
         end
         
-		local Move = Sequence.Attacks[tostring(Index)]
+
+        local Ping = PlayerObject.PingBuffer.Ping
+        local Move = Sequence.Attacks[tostring(Index)]
+        local Length = Move.Length + Move.Cooldown
+        PlayerObject:SetKey("Attack", Length - Ping)
+
         PlayerObject.LastAttack = Sequence
         PlayerObject.LastIndex = Index
         PlayerObject.Attack = {
@@ -102,24 +107,33 @@ function SequenceService:KnitStart()
             Hits = {};
         }
 
-        local Ping = PlayerObject.PingBuffer.Ping
-        Thread.Delay(Ping + Move.Length + Move.Cooldown, function()
+        Thread.Delay(Length + Ping, function()
             local Attack = PlayerObject.Attack
+            if not Attack or Move ~= Attack.Move then return end
+            Attack.Ended = true
+        end)
 
-            if Attack and Move == Attack.Move then
-                PlayerObject.Attack.Ended = true
-                
-                Thread.Delay(Ping + 1.5, function()
-                    PlayerObject.LastAttack = nil
-                    PlayerObject.LastIndex = nil
-                    PlayerObject.Attack = nil
-                    print("Ended")
-                end)
+        Thread.Delay(Length + 1.5 - Ping, function()
+            local Attack = PlayerObject.Attack
+            if not Attack or Move ~= Attack.Move then return end
+
+            if not PlayerObject.Finished then
+                PlayerObject.LastAttack = nil
+                PlayerObject.LastIndex = nil
+                PlayerObject.Attack = nil
             end
         end)
+
+        if Sequence.AttackCount == Index then
+            PlayerObject.Finished = true
+            PlayerObject.LastAttack = nil
+            PlayerObject.LastIndex = nil
+        else
+            PlayerObject.Finished = false
+        end
     end)
     
-    SequenceService.Client.Hit:Connect(function(Player, Hits)
+    SequenceService.Client.Hit:Connect(function(Player, Humanoids)
         local PlayerObject = Players[Player]
         if not PlayerObject or
             not PlayerObject.Tool
@@ -134,13 +148,19 @@ function SequenceService:KnitStart()
             return 
         end
         
+        local MaxHits = Attack.Move.MaxHits
         local Damage = Attack.Move.Damage
-        for _, Hit in ipairs(Hits) do
+        local Hits = Attack.Hits
+        
+        for _, Hit in ipairs(Humanoids) do
+            if Hits[Hit] and Hits[Hit] >= MaxHits then
+                continue
+            end
+
             local Invalid = true
             local IsPlayer = PlayerService:GetPlayerFromCharacter(Hit)
 
             if IsPlayer then -- Player
-                print("Valid Magnitude Check")
                 Invalid = false
             else -- NPC
                 Invalid = Player:DistanceFromCharacter(Hit.RootPart.Position) > 50
@@ -148,6 +168,7 @@ function SequenceService:KnitStart()
 
             if Invalid then continue end
             Hit:TakeDamage(Damage)
+            Hits[Hit] = (Hits[Hit] or 0) + 1
         end
     end)
 end

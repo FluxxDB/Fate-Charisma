@@ -22,30 +22,17 @@ local function LookForkey(KeyName)
     return Key
 end
 
-function PlayerController:RemoveKey(KeyName)
+function PlayerController.RemoveKey(KeyName)
     if Keys[KeyName] then
         Keys[KeyName] = nil
     end
 end
 
-function PlayerController:GetKey(KeyName)
-    local Key = LookForkey(KeyName)
-    if not Key then return end
-    
-    return Key
+function PlayerController.HasKey(KeyName)
+    return LookForkey(KeyName)
 end
 
-function PlayerController:HasKey(...)
-  for _, KeyName in ipairs({...}) do
-    if not LookForkey(KeyName) then
-      return false
-    end
-  end
-  
-  return true
-end
-
-function PlayerController:SetKey(KeyName, Duration)
+function PlayerController.SetKey(KeyName, Duration)
     local start = tick()
     local Key = Keys[KeyName]
     

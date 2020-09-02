@@ -16,6 +16,7 @@ function PlayerObject.new(Player, Profile)
         _Player = Player;
         Profile = Profile;
         CanPing = true;
+        Keys = {};
 
         PositionBuffer = RingBuffer.new(50);
         PingBuffer = RingBuffer.new(10, function(Object, Value)
@@ -35,5 +36,42 @@ function PlayerObject.new(Player, Profile)
 	return setmetatable(self, PlayerObject)
 end
 
+function PlayerObject:_LookForkey(KeyName)
+    local Keys = self.Keys
+    if next(Keys) == nil then return end
+    local Key = Keys[KeyName]
+    
+    if Key and tick() >= (Key._Duration or math.huge) then
+        return self:RemoveKey(KeyName)
+    end
+    
+    return Key
+end
+
+function PlayerObject:RemoveKey(KeyName)
+    local Keys = self.Keys
+    if Keys[KeyName] then
+        Keys[KeyName] = nil
+    end
+end
+
+function PlayerObject:HasKey(KeyName)
+    return self:_LookForkey(KeyName)
+end
+
+function PlayerObject:SetKey(KeyName, Duration)
+    local start = tick()
+    local Keys = self.Keys
+    local Key = Keys[KeyName]
+    
+    if not Key then
+        Key = {}
+        Keys[KeyName] = Key
+    end
+    
+    if Duration then
+        Key._Duration = start + Duration
+    end
+end
 
 return PlayerObject
