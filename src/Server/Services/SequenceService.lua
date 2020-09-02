@@ -109,10 +109,11 @@ function SequenceService:KnitStart()
             if Attack and Move == Attack.Move then
                 PlayerObject.Attack.Ended = true
                 
-                Thread.Delay(Ping + 0.7, function()
+                Thread.Delay(Ping + 1.5, function()
                     PlayerObject.LastAttack = nil
                     PlayerObject.LastIndex = nil
                     PlayerObject.Attack = nil
+                    print("Ended")
                 end)
             end
         end)

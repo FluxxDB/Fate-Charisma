@@ -1,9 +1,10 @@
 local ControllersToLoad = {
-    "WeaponController";
+    "PlayerController";
     "CharacterController";
-    "LatencyController";
     "InputController";
+    "WeaponController";
     "CombatController";
+    "LatencyController";
 }
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

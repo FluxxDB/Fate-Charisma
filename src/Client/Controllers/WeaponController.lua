@@ -1,6 +1,11 @@
 -- Servicees
 local Knit = _G.KnitClient
 local CharacterController
+local PlayerController
+
+-- Require Modules
+local Modules = Knit.Modules
+local Sequencer = require(Modules.Sequencer)
 
 -- Variables
 local Player = Knit.Player
@@ -65,10 +70,18 @@ local function Equip(Character, Tool)
 
     local Connection
     Connection = Tool.AncestryChanged:Connect(function()
-		if Tool.Parent == Character then return end
+        if Tool.Parent == Character then return end
+        if Character == Player.Character then
+            PlayerController.Weapon = nil
+        end
+
         Holder:Destroy()
         Connection:Disconnect()
     end)
+
+    if Character == Player.Character then
+        PlayerController.Weapon = Sequencer.new(Config.Type, table.unpack(Config.Sequences))
+    end
 end
 
 
@@ -87,6 +100,7 @@ end
 -- Initialize
 function WeaponController:KnitInit()
     CharacterController = Knit.Controllers.CharacterController
+    PlayerController = Knit.Controllers.PlayerController
 end
 
 

@@ -1,13 +1,9 @@
 -- Servicees
 local Knit = _G.KnitClient
-
--- Require Controllers
-local Input = Knit.Controllers.InputController
-local CharacterController = Knit.Controllers.CharacterController
-
--- Require Modules
-local Modules = Knit.Modules
-local Sequencer = require(Modules.Sequencer)
+local Controllers = Knit.Controllers
+local Input
+local CharacterController
+local PlayerController
 
 -- Variables
 local Player = Knit.Player
@@ -33,22 +29,24 @@ end
 
 -- Start
 function CombatController:KnitStart()
-    wait(5)
-    local Sword = Sequencer.new("Sword", "Basic", "RCombo")
-
     Input.Began:Connect(function(InputObject, Key)
         if not (Key or Player.Character) then return end
         if Input.IsDown("V") and Input.AreAnyDown("W", "S") then
             return Dash()
         end
-
-        local Sequence, Index = Sword:Progress(Key)
+        
+        if not PlayerController.Weapon or PlayerController:HasKey("Attack") then return end
+        local Attack = PlayerController.Weapon:Progress(Key)
+        if not Attack then return end
+        PlayerController:SetKey("Attack", Attack.Cooldown + Attack.Length)
     end)
 end
 
 -- Initialize
 function CombatController:KnitInit()
-
+    Input = Controllers.InputController
+    CharacterController = Controllers.CharacterController
+    PlayerController = Controllers.PlayerController
 end
 
 return CombatController

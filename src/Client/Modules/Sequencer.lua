@@ -131,7 +131,7 @@ function Sequencer:Progress(Key)
         else
             self.Finished = false
         end
-        return Sequence, Index
+        return Attack
     end
 end
 
