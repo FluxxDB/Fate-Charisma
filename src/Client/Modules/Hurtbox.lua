@@ -9,10 +9,10 @@ local function GetTouchingParts(Part)
     return results
  end
 
-return function(CFrame, Size, Debug)
+return function(Position, Size, Debug)
     local Hurtbox = Instance.new("Part")
     Hurtbox.Size = Size
-    Hurtbox.CFrame = CFrame
+    Hurtbox.CFrame = Position
     Hurtbox.Transparency = Debug and 0.8 or 1 
     Hurtbox.CanCollide = false
     Hurtbox.Anchored = true

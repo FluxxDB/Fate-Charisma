@@ -3,7 +3,7 @@ local ServicesToLoad = {
     "CharacterService";
     "LatencyService";
     "FloodService";
-    -- "SequenceService";
+    "SequenceService";
 }
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

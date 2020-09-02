@@ -10,5 +10,9 @@
     },
     "Lua.diagnostics.disable": [
         "trailing-space"
+    ],
+    "Lua.diagnostics.ignore": [
+        "TakeDamage",
+        "RootPart"
     ]
 }
