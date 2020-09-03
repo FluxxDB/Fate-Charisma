@@ -109,7 +109,6 @@ function Sequencer:Progress(Key)
             local NewAttack = Possible.Attacks["1"]
             if NewAttack and table.find(NewAttack.Key, Key) and (Input.WasAllTapped(0.3, unpack(NewAttack.Key))) then
                 self.Index = 1
-                self.LTick = nil
                 self.Sequence = Possible
                 Index = "1"
                 Attack = NewAttack
