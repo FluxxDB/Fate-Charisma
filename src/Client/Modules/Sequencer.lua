@@ -125,8 +125,8 @@ function Sequencer:Progress(Key)
         self.Last = tick()
         self.Animator:Play(Sequence.Type, Sequence.Name..Index)
 
-        Thread.Delay(Attack.Length + Attack.Cooldown + 0.5, function()
-            if not (self.Finished) and self.Last and (tick() - self.Last >= 0.5 + Attack.Length) then
+        Thread.Delay(Attack.Length + Attack.Cooldown + 0.55, function()
+            if not (self.Finished) and self.Last and (tick() - self.Last >= 0.55 + Attack.Length) then
                 self.CurrSequence = nil
                 self.Last = nil
             end
