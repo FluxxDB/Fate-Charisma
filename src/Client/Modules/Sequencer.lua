@@ -75,7 +75,7 @@ end
 function Sequencer:GetSequence(Key)
     local NewSequence
     for _, Sequence in pairs(self.Sequences) do
-        if self.CurrSequence or not Sequence.IsStarter then
+        if self.Sequence or not Sequence.IsStarter then
             continue
         end
         
@@ -83,7 +83,7 @@ function Sequencer:GetSequence(Key)
         if Attack and table.find(Attack.Key, Key) and Input.WasAllTapped(0.3, unpack(Attack.Key)) then
             NewSequence = Sequence
             self.Index = 1
-            self.CurrSequence = Sequence
+            self.Sequence = Sequence
         end
     end
     return NewSequence
@@ -92,7 +92,7 @@ end
 function Sequencer:Progress(Key)
     if not self.Animator then return end
 
-    local Sequence = self.CurrSequence
+    local Sequence = self.Sequence
     if not Sequence then
         Sequence = self:GetSequence(Key)
         if not Sequence then
@@ -109,34 +109,38 @@ function Sequencer:Progress(Key)
             local NewAttack = Possible.Attacks["1"]
             if NewAttack and table.find(NewAttack.Key, Key) and (Input.WasAllTapped(0.3, unpack(NewAttack.Key))) then
                 self.Index = 1
-                self.Last = nil
-                self.CurrSequence = Possible
-                Sequence = Possible
+                self.LTick = nil
+                self.Sequence = Possible
                 Index = "1"
                 Attack = NewAttack
+                Sequence = Possible
             end
         end
     end
 
     if Attack and 
         Input.WasAllTapped(0.1, unpack(Attack.Key)) and
-        not (self.Index > 1 and not HasKey("CanCombo"))
+        not (self.LAttack and ((self.LAttack == Sequence and self.Index > 1 or
+        self.LAttack ~= Sequence and self.Index == 1) and not HasKey("CanCombo")))
     then
-        self.Last = tick()
+        self.LTick = tick()
+        self.LAttack = Sequence
         self.Animator:Play(Sequence.Type, Sequence.Name..Index)
 
         Thread.Delay(Attack.Length + Attack.Cooldown + 0.55, function()
-            if not (self.Finished) and self.Last and (tick() - self.Last >= 0.55 + Attack.Length) then
-                self.CurrSequence = nil
-                self.Last = nil
+            if not (self.Finished) and self.LTick and (tick() - self.LTick >= 0.55 + Attack.Length) then
+                self.Sequence = nil
+                self.LAttack = nil
+                self.LTick = nil
             end
         end)
 
         self.Index = self.Index + 1
         if Sequence.AttackCount == self.Index - 1 then
             self.Finished = true
-            self.CurrSequence = nil
-            self.Last = nil
+            self.Sequence = nil
+            self.LAttack = nil
+            self.LTick = nil
         else
             self.Finished = false
         end
