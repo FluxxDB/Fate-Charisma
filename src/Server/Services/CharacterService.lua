@@ -53,6 +53,9 @@ local Client = CharacterService.Client
 
 -- Start
 function CharacterService:KnitStart()
+    Players = Knit.Services.PlayerService.Players
+    Flood = Knit.Services.FloodService
+    
     Client.Spawn:Connect(function(Player, Character)
         if not Flood:Check(Player, 1, 5, "SpawnRemote") or not Character then
             return
@@ -72,10 +75,7 @@ function CharacterService:KnitStart()
             if not Child:IsA("Tool") then return end
             local Module = Child:FindFirstChild("Module")
             if not Module or not Module.Value then return end
-            print(Object)
-            
             Object.Tool = require(Module.Value)
-            print(Object.Tool)
         end)
         
         Model.ChildRemoved:Connect(function(Tool)
@@ -114,9 +114,6 @@ end
 
 -- Initialize
 function CharacterService:KnitInit()
-    Players = Knit.Services.PlayerService.Players
-    Flood = Knit.Services.FloodService
-
     workspace.ChildAdded:Connect(function(Child)
         if not Child:IsA("Tool") then return end
         Child:Destroy()

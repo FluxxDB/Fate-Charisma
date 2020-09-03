@@ -11,10 +11,9 @@ PlayerObject.__index = PlayerObject
 
 
 -- Constructor method
-function PlayerObject.new(Player, Profile)
+function PlayerObject.new(Player)
 	local self = {
         _Player = Player;
-        Profile = Profile;
         CanPing = true;
         Keys = {};
 

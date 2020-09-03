@@ -15,7 +15,11 @@ local Thread = require(Util.Thread)
 
 -- Variables
 local Player = Knit.Player
+
+local RemoveKey = PlayerController.RemoveKey
+local HasKey = PlayerController.HasKey
 local SetKey = PlayerController.SetKey
+
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local SequencesFolder = Assets:WaitForChild("Sequences")
 
@@ -114,7 +118,10 @@ function Sequencer:Progress(Key)
         end
     end
 
-    if Attack and Input.WasAllTapped(0.1, unpack(Attack.Key)) then
+    if Attack and 
+        Input.WasAllTapped(0.1, unpack(Attack.Key)) and
+        not (self.Index > 1 and not HasKey("CanCombo"))
+    then
         self.Last = tick()
         self.Animator:Play(Sequence.Type, Sequence.Name..Index)
 
@@ -137,6 +144,12 @@ function Sequencer:Progress(Key)
         SetKey("Attack", Attack.Cooldown + Attack.Length)
         SetKey("AttackAnimation", Attack.Length)
         return Attack
+    end
+
+    if HasKey("CanCombo") then
+        Thread.Delay(0.2, function()
+            RemoveKey("CanCombo")
+        end)
     end
 end
 

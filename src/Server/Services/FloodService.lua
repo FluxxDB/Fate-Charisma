@@ -13,7 +13,7 @@ local FloodService = Knit.CreateService {
 function FloodService:Check(Player, Rate, Time, Identifier, PingCheck)
 	local Object = Players[Player]
     if not Object then
-        return
+        return false
     end
 
     if not Object.Flood then
@@ -75,8 +75,8 @@ function FloodService:Check(Player, Rate, Time, Identifier, PingCheck)
 	end
 end
 
--- Initialize
-function FloodService:KnitInit()
+-- Start
+function FloodService:KnitStart()
     Players = Knit.Services.PlayerService.Players
 end
 

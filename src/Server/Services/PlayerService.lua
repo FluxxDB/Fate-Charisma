@@ -1,6 +1,8 @@
 -- Servicees
 local Knit = _G.KnitServer
 local PlayersService = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+
 
 -- Require Modules
 local Util = Knit.Util
@@ -10,8 +12,10 @@ local ProfileService = require(Modules.ProfileService)
 local PlayerObject = require(Modules.PlayerObject)
 local RemoteEvent = require(Util.Remote.RemoteEvent)
 
+
 -- Variables
 local Flood
+
 
 -- Create Knit Service
 local PlayerService = Knit.CreateService {
@@ -22,9 +26,10 @@ local PlayerService = Knit.CreateService {
 
     -- Client exposed events:
     Client = {
-        Ready = RemoteEvent.new(1, math.huge);
+        Update = RemoteEvent.new();
     };
 }
+
 
 -- References for faster lookups
 local Players = PlayerService.Players
@@ -45,48 +50,65 @@ local GameProfileStore = ProfileService.GetProfileStore(
     }
 )
 
-local function PlayerAdded(player)
-    local profile = GameProfileStore:LoadProfileAsync(
-        "Player" .. player.UserId,
+local function LoadData(Player, Object)
+    local Profile = GameProfileStore:LoadProfileAsync(
+        "Player" .. Player.UserId,
         "ForceLoad"
     )
-    if profile ~= nil then
-        profile:ListenToRelease(function()
-            Players[player] = nil
+    
+    if Profile ~= nil then
+        Profile:ListenToRelease(function()
             -- The profile could've been loaded on another Roblox server:
-            player:Kick("The profile couldn't be loaded.")
+            Player:Kick("The Profile couldn't be loaded.")
         end)
 
-        if player:IsDescendantOf(PlayersService) then
-            Players[player] = PlayerObject.new(player, profile)
-            print("Added")
+        if Player:IsDescendantOf(PlayersService) then
+            Object.Profile = Profile
         else
             -- Player left before the profile loaded:
-            profile:Release()
+            Profile:Release()
         end
     else
         -- The profile couldn't be loaded possibly due to other
         --   Roblox servers trying to load this profile at the same time:
-        player:Kick("The profile couldn't be loaded.")
+        Player:Kick("The profile couldn't be loaded.")
     end
 end
 
 
 -- Start
 function PlayerService:KnitStart()
-    Client.Ready:Connect(function(Player)
-        if Players[Player] then return end
-        Players[Player] = {}
-        PlayerAdded(Player)
+    Flood = Knit.Services.FloodService
+    
+    Client.Update:Connect(function(Player)
+        local Object = Players[Player]
+        if Object and Flood:Check(Player, 1, 2.5, "Update") then 
+            return Client.Update:Fire(Player, HttpService:JSONEncode(Object.Profile))
+        end
+
+        Object = PlayerObject.new(Player)
+        Players[Player] = Object
+        
+        local success = pcall(function()
+            LoadData(Player, Object)
+        end)
+            
+        if not success then
+            Player:Kick("The profile couldn't be loaded.")
+        end
+        
+        Client.Update:Fire(
+            Player, 
+            HttpService:JSONEncode(Object.Profile.Data)
+        )
     end)
 end
 
 -- Initialize
 function PlayerService:KnitInit()
-    Flood = Knit.Services.FloodService
 
     -- Clean up data when player leaves:
-    game:GetService("Players").PlayerRemoving:Connect(function(Player)
+    PlayersService.PlayerRemoving:Connect(function(Player)
         local Object = Players[Player]
 
         if Object and Object.Profile ~= nil then

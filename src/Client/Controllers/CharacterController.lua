@@ -12,7 +12,9 @@ local Signal = require(Util.Signal)
 
 -- Variables
 local Player = Knit.Player
-local Camera = workspace.CurrentCamera
+local Camera = workspace:WaitForChild("Camera")
+local CameraType = Enum.CameraType.Custom
+
 local EntitiesFolder =  workspace:WaitForChild("Entities")
 local CharacterAdded = Signal.new()
 
@@ -34,8 +36,9 @@ function RenderVisual(Model, IsPlayer)
     
     local HRP = Humanoid.RootPart
     if not HRP or 
-    (Player.Character and (Player.Character.PrimaryPart.Position - HRP.Position).Magnitude or 
-    (Camera.CFrame.Position - HRP.Position).Magnitude) >= 1500 then
+        (Player.Character and (Player.Character.PrimaryPart.Position - HRP.Position).Magnitude or
+        (Camera.CFrame.Position - HRP.Position).Magnitude) >= 1500
+    then
         return
     end
     
@@ -104,8 +107,8 @@ function CharacterController:KnitStart()
         LoopThroughEntities(Mobs, false)
     end)
 
-    Thread.DelayRepeat(1/14, function()
-        for Model, Animator in pairs(Models) do
+    Thread.DelayRepeat(1/20, function()
+        for _, Animator in pairs(Models) do
             if type(Animator) == "boolean" then continue end
             Animator:Update()
         end
@@ -115,6 +118,9 @@ end
 -- Init
 function CharacterController:KnitInit()
     Player.CharacterAdded:Connect(function(Character)
+        Camera.CameraSubject = Character:WaitForChild("Humanoid")
+        Camera.CameraType = CameraType
+        
         while true do
             local Tool = Character:FindFirstChildOfClass("Tool")
             if not Tool then break end

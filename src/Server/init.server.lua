@@ -11,14 +11,17 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:WaitForChild("Knit"))
 Knit.Modules = script.Modules
 
-require(Knit.Util.Component).Auto(script.Components)
-
 for _, Name in ipairs(ServicesToLoad) do
     local Module = script.Services:FindFirstChild(Name)
 
     if Module then
         require(Module)
     end
+end
+
+local Components = script:FindFirstChild("Components")
+if Components then
+    require(Knit.Util.Component).Auto(Components)
 end
 
 Knit.Start():andThen(function()

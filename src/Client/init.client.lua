@@ -8,11 +8,9 @@ local ControllersToLoad = {
 }
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Knit = require(ReplicatedStorage:WaitForChild("Knit"))
+local KnitModule = ReplicatedStorage:WaitForChild("Knit")
+local Knit = require(KnitModule)
 Knit.Modules = script.Modules
-
-require(Knit.Util.Component).Auto(script.Components)
 
 for _, Name in ipairs(ControllersToLoad) do
     local Module = script.Controllers:FindFirstChild(Name)
@@ -21,6 +19,16 @@ for _, Name in ipairs(ControllersToLoad) do
         require(Module)
     end
 end
+
+local Components = script:FindFirstChild("Components")
+if Components then
+    require(Knit.Util.Component).Auto(Components)
+end
+
+local Services = KnitModule:WaitForChild("Services")
+repeat 
+    wait() 
+until #Services:GetChildren() > 1
 
 Knit.Start():andThen(function()
     print("[Knit Client]: Started")
