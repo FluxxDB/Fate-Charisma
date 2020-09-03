@@ -58,8 +58,7 @@ local function PlayerAdded(player)
         end)
 
         if player:IsDescendantOf(PlayersService) then
-            local Player = PlayerObject.new(player, profile)
-            Players[player] = Player
+            Players[player] = PlayerObject.new(player, profile)
         else
             -- Player left before the profile loaded:
             profile:Release()
@@ -89,8 +88,8 @@ function PlayerService:KnitInit()
     game:GetService("Players").PlayerRemoving:Connect(function(Player)
         local Object = Players[Player]
 
-        if Object and Object.Data ~= nil then
-            Object.Data:Release()
+        if Object and Object.Profile ~= nil then
+            Object.Profile:Release()
         end
 
         Players[Player] = nil
