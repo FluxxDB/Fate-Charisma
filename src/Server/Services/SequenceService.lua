@@ -62,8 +62,9 @@ function SequenceService:KnitStart()
         then
             return
         end
-
+        
         local Tool = PlayerObject.Tool
+        print(PlayerObject, Tool)
         if not Tool or
             not table.find(Tool.Sequences, SequenceName)
         then

@@ -72,8 +72,10 @@ function CharacterService:KnitStart()
             if not Child:IsA("Tool") then return end
             local Module = Child:FindFirstChild("Module")
             if not Module or not Module.Value then return end
+            print(Object)
             
             Object.Tool = require(Module.Value)
+            print(Object.Tool)
         end)
         
         Model.ChildRemoved:Connect(function(Tool)
@@ -99,10 +101,13 @@ function CharacterService:KnitStart()
 
     Thread.DelayRepeat(0.1, function()
         for _, Object in pairs(Players) do
+            local PositionBuffer = Object.PositionBuffer
+            if not PositionBuffer then return end
+            
             local Character = Object.Character
             if not Character then continue end
 
-            Object.PositionBuffer:insert(Character.PrimaryPart.CFrame)
+            PositionBuffer:insert(Character.PrimaryPart.CFrame)
         end
     end)
 end

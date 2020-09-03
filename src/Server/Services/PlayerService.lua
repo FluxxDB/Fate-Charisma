@@ -59,6 +59,7 @@ local function PlayerAdded(player)
 
         if player:IsDescendantOf(PlayersService) then
             Players[player] = PlayerObject.new(player, profile)
+            print("Added")
         else
             -- Player left before the profile loaded:
             profile:Release()
