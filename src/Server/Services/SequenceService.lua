@@ -1,5 +1,6 @@
 -- Servicees
 local Knit = _G.KnitServer
+local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local PlayerService = game:GetService("Players")
 
@@ -155,6 +156,7 @@ function HitCheck(Player, Humanoids)
         return 
     end
     
+    local Ping = PlayerObject.PingBuffer.Ping
     local MaxHits = Attack.Move.MaxHits
     local Damage = Attack.Move.Damage
     local Hits = Attack.Hits
@@ -175,6 +177,16 @@ function HitCheck(Player, Humanoids)
 
         if Invalid then continue end
         
+        if IsPlayer then
+            for Tag, Length in pairs(Attack.Tags) do
+                CollectionService:AddTag(IsPlayer, Tag)
+
+                Thread.Delay(Length + Ping, function()
+                    CollectionService:RemoveTag(IsPlayer, Tag)
+                end)
+            end
+        end
+
         Hit:TakeDamage(Damage)
         Hits[Hit] = (Hits[Hit] or 0) + 1
         PlayerObject:SetKey("CanCombo")

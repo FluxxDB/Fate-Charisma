@@ -1,6 +1,10 @@
 -- Services
-local Knit = _G.KnitServer
-local Players = Knit.Services.PlayerService.Players
+local Knit = _G.KnitClient
+local Controllers = Knit.Controllers
+local PlayerController = Controllers.PlayerController
+
+-- Variables
+local Player = Knit.Player
 
 local Stagger = {
     Tag = "Stagger";
@@ -8,21 +12,26 @@ local Stagger = {
 Stagger.__index = Stagger
 
 -- CONSTRUCTOR
-function Stagger.new(Player)
+function Stagger.new(PlayerInstance)
     local self = setmetatable({
-        PlayerObject = Players[Player];
+        Player = PlayerInstance
     }, Stagger)
     return self
 end
 
 -- OPTIONAL LIFECYCLE HOOKS
 function Stagger:Init() --                     -> Called right after constructor
-    local Object = self.PlayerObject
+    local Object = self.Player
+    if Object ~= Player then return end
+
     local Character = Object.Character
     if Character and Character.PrimaryPart then
-        Character.PrimaryPart:SetNetworkOwner(nil)
+        local Humanoid = Character:FindFirstChild("Humanoid")
+        Humanoid.JumpPower = 0
+        Humanoid.WalkSpeed = 0
+        Humanoid.AutoRotate = false
     end
-    Object:SetKey("Stagger")
+    PlayerController.SetKey("Stagger")
 end
 
 --[[
@@ -34,12 +43,17 @@ function Stagger:HeartbeatUpdate(dt)  end --   -> Updates every heartbeat
 
 -- DESTRUCTOR
 function Stagger:Destroy()
-    local Object = self.PlayerObject
+    local Object = self.Player
+    if Object ~= Player then return end
+
     local Character = Object.Character
     if Character and Character.PrimaryPart then
-        Character.PrimaryPart:SetNetworkOwner(Object._Player)
+        local Humanoid = Character:FindFirstChild("Humanoid")
+        Humanoid.JumpPower = 50
+        Humanoid.WalkSpeed = 16
+        Humanoid.AutoRotate = true
     end
-    Object:RemoveKey("Stagger")
+    PlayerController.RemoveKey("Stagger")
 end
 
 return Stagger
