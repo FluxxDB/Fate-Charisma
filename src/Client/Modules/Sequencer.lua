@@ -114,12 +114,12 @@ function Sequencer:Progress(Key)
         end
     end
 
-    if Attack and Input.WasAllTapped(0.3, unpack(Attack.Key)) then
+    if Attack and Input.WasAllTapped(0.1, unpack(Attack.Key)) then
         self.Last = tick()
         self.Animator:Play(Sequence.Type, Sequence.Name..Index)
 
-        Thread.Delay(Attack.Length + Attack.Cooldown + 1.4, function()
-            if not (self.Finished) and self.Last and (tick() - self.Last >= 1) then
+        Thread.Delay(Attack.Length + Attack.Cooldown + 0.5, function()
+            if not (self.Finished) and self.Last and (tick() - self.Last >= 0.5 + Attack.Length) then
                 self.CurrSequence = nil
                 self.Last = nil
             end
@@ -135,6 +135,7 @@ function Sequencer:Progress(Key)
         end
 
         SetKey("Attack", Attack.Cooldown + Attack.Length)
+        SetKey("AttackAnimation", Attack.Length)
         return Attack
     end
 end

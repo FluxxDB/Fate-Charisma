@@ -28,20 +28,21 @@ local function Dash()
         Animator:Play("Actions", "DashBackward")
     end
     
-    SetKey("Dash", 0.7)
+    SetKey("DashAnimation", 0.5)
+    SetKey("Dash", 2)
 end
 
 -- Start
 function CombatController:KnitStart()
     Input.Began:Connect(function(_, Key)
         if not (Key or Player.Character) then return end
-        if HasKey("Dash") or HasKey("Attack") then return end
+        if HasKey("AttackAnimation") then return end
 
-        if Input.IsDown("V") and Input.AreAnyDown("W", "S") then
+        if Input.IsDown("V") and Input.AreAnyDown("W", "S") and not HasKey("Dash") then
             return Dash()
         end
         
-        if not PlayerController.Weapon then return end
+        if not PlayerController.Weapon or HasKey("Attack") or HasKey("DashAnimation") then return end
         PlayerController.Weapon:Progress(Key)
     end)
 end
