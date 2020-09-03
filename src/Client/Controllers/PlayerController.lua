@@ -3,6 +3,9 @@ local Knit = _G.KnitClient
 
 -- Variables
 local Keys = {}
+local PlayerService
+local CharacterService
+
 
 -- Create Knit controller
 local PlayerController = Knit.CreateController {
@@ -48,10 +51,14 @@ end
 
 -- Start
 function PlayerController:KnitStart()
+    PlayerService.Ready:Fire()
+    CharacterService.Spawn:Fire("R6")
 end
 
 -- Initialize
 function PlayerController:KnitInit()
+    PlayerService = Knit.GetService("PlayerService")
+    CharacterService = Knit.GetService("CharacterService")
 end
 
 return PlayerController

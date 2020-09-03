@@ -12,6 +12,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:WaitForChild("Knit"))
 Knit.Modules = script.Modules
 
+require(Knit.Util.Component).Auto(Knit.Comopnents)
+
 for _, Name in ipairs(ControllersToLoad) do
     local Module = script.Controllers:FindFirstChild(Name)
 
@@ -22,10 +24,6 @@ end
 
 Knit.Start():andThen(function()
     print("[Knit Client]: Started")
-    Knit.GetService("PlayerService").Ready:Fire()
-    wait(1)
-    Knit.GetService("CharacterService").Spawn:Fire("R6")
-    print("Requested Character.")
 end):catch(function(err)
     warn("[Knit Client]: Failed to initialize")
     warn(tostring(err))
