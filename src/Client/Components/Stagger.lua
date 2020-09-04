@@ -3,6 +3,9 @@ local Knit = _G.KnitClient
 local Controllers = Knit.Controllers
 local PlayerController = Controllers.PlayerController
 
+local Players = game:GetService("Players")
+
+
 -- Variables
 local Player = Knit.Player
 
@@ -12,10 +15,12 @@ local Stagger = {
 Stagger.__index = Stagger
 
 -- CONSTRUCTOR
-function Stagger.new(PlayerInstance)
+function Stagger.new(Humanoid)    
     local self = setmetatable({
-        Player = PlayerInstance
+        Player = Players:GetPlayerFromCharacter(Humanoid.Parent);
+        Humanoid = Humanoid;
     }, Stagger)
+    
     return self
 end
 
@@ -23,14 +28,7 @@ end
 function Stagger:Init() --                     -> Called right after constructor
     local Object = self.Player
     if Object ~= Player then return end
-
-    local Character = Object.Character
-    if Character and Character.PrimaryPart then
-        local Humanoid = Character:FindFirstChild("Humanoid")
-        Humanoid.JumpPower = 0
-        Humanoid.WalkSpeed = 0
-        Humanoid.AutoRotate = false
-    end
+    
     PlayerController.SetKey("Stagger")
 end
 
@@ -46,13 +44,6 @@ function Stagger:Destroy()
     local Object = self.Player
     if Object ~= Player then return end
 
-    local Character = Object.Character
-    if Character and Character.PrimaryPart then
-        local Humanoid = Character:FindFirstChild("Humanoid")
-        Humanoid.JumpPower = 50
-        Humanoid.WalkSpeed = 16
-        Humanoid.AutoRotate = true
-    end
     PlayerController.RemoveKey("Stagger")
 end
 

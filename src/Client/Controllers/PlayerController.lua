@@ -5,6 +5,7 @@ local HttpService = game:GetService("HttpService")
 
 -- Variables
 local Keys = {}
+local Player = Knit.Player
 local PlayerService
 local CharacterService
 
@@ -57,11 +58,13 @@ function PlayerController:KnitStart()
     CharacterService = Knit.GetService("CharacterService")
 
     PlayerService.Update:Connect(function(Data)
+        if not Player.Character then
+            CharacterService.Spawn:Fire("R6")
+        end
         PlayerService.Data = HttpService:JSONDecode(Data)
     end)
 
     PlayerService.Update:Fire()
-    CharacterService.Spawn:Fire("R6")
 end
 
 return PlayerController

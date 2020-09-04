@@ -88,7 +88,11 @@ end
 -- Start
 function WeaponController:KnitStart()
     CharacterController.CharacterAdded:Connect(function(Character)
-        print("Character added.", Character)
+        for _, Tool in ipairs(Character:GetChildren()) do
+            if not Tool:IsA("Tool") then continue end
+            Equip(Character, Tool)
+            break
+        end
 
         Character.ChildAdded:Connect(function(Tool)
             if not Tool:IsA("Tool") then return end

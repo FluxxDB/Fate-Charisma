@@ -58,7 +58,8 @@ function StartCombo(Player, SequenceName, Index)
     local PlayerObject = Players[Player]
     if not PlayerObject or 
         not Index or
-        PlayerObject:HasKey("Attack")
+        PlayerObject:HasKey("Attack") or
+        PlayerObject:HasKey("Stagger")
     then
         return
     end
@@ -144,7 +145,8 @@ end
 function HitCheck(Player, Humanoids)
     local PlayerObject = Players[Player]
     if not PlayerObject or
-        not PlayerObject.Tool
+        not PlayerObject.Tool or
+        PlayerObject:HasKey("Stagger")
     then
         return
     end
@@ -157,9 +159,11 @@ function HitCheck(Player, Humanoids)
     end
     
     local Ping = PlayerObject.PingBuffer.Ping
-    local MaxHits = Attack.Move.MaxHits
-    local Damage = Attack.Move.Damage
     local Hits = Attack.Hits
+    local Move = Attack.Move
+    local MaxHits = Move.MaxHits
+    local Damage = Move.Damage
+    local Tags = Move.Tags
     
     for _, Hit in ipairs(Humanoids) do
         if Hits[Hit] and Hits[Hit] >= MaxHits then
@@ -177,14 +181,15 @@ function HitCheck(Player, Humanoids)
 
         if Invalid then continue end
         
-        if IsPlayer then
-            for Tag, Length in pairs(Attack.Tags) do
-                CollectionService:AddTag(IsPlayer, Tag)
+        for Tag, Length in pairs(Tags) do
+            local Delay = Length + Ping
+            CollectionService:AddTag(Hit, Tag)
+            PlayerObject:SetKey(Hit, Delay * 0.95)
 
-                Thread.Delay(Length + Ping, function()
-                    CollectionService:RemoveTag(IsPlayer, Tag)
-                end)
-            end
+            Thread.Delay(Delay, function()
+                if PlayerObject:HasKey(Hit) then return end
+                CollectionService:RemoveTag(Hit, Tag)
+            end)
         end
 
         Hit:TakeDamage(Damage)

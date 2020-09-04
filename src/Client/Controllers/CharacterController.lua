@@ -5,8 +5,8 @@ local Knit = _G.KnitClient
 -- Require Modules
 local Util = Knit.Util
 local Modules = Knit.Modules
-local Thread = require(Util.Thread)
 local AnimatorClass = require(Modules.Animator)
+local Thread = require(Util.Thread)
 local Signal = require(Util.Signal)
 
 
@@ -91,6 +91,8 @@ end
 
 -- Start
 function CharacterController:KnitStart()
+    local CharacterService = Knit.GetService("CharacterService")
+
     local Characters = EntitiesFolder:WaitForChild("Characters")
     local Npcs = EntitiesFolder:WaitForChild("Npcs")
     local Mobs = EntitiesFolder:WaitForChild("Mobs")
@@ -113,12 +115,10 @@ function CharacterController:KnitStart()
             Animator:Update()
         end
     end)
-end
 
--- Init
-function CharacterController:KnitInit()
     Player.CharacterAdded:Connect(function(Character)
-        Camera.CameraSubject = Character:WaitForChild("Humanoid")
+        local Humanoid = Character:WaitForChild("Humanoid")
+        Camera.CameraSubject = Humanoid
         Camera.CameraType = CameraType
         
         while true do
@@ -129,6 +129,12 @@ function CharacterController:KnitInit()
         end
 
         RenderVisual(Character, false)
+
+        Humanoid.Died:Connect(function()
+            Thread.Delay(6, function()
+                CharacterService.Spawn:Fire("R6")
+            end)
+        end)
     end)
 end
 
