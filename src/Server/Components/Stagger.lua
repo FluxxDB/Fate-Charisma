@@ -26,7 +26,7 @@ function Stagger:Init() --                     -> Called right after constructor
     local Humanoid = self.Humanoid
     if Humanoid and Humanoid.RootPart and Humanoid.Parent then
         Humanoid.JumpPower = 0
-        Humanoid.WalkSpeed = 5
+        Humanoid.WalkSpeed = 0
         Humanoid.AutoRotate = false
         Humanoid.RootPart:SetNetworkOwner(nil)
     end
