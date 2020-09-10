@@ -63,12 +63,6 @@ function RenderVisual(Model, IsPlayer)
 
         IsR6.Part0 = HRP
         IsR6.Part1 = Part1
-    else
-        local LowerTorso = Model:FindFirstChild("LowerTorso")
-        local Joint = LowerTorso:FindFirstChild("Root")
-
-        Joint.Part0 = HRP
-        Joint.Part1 = LowerTorso
     end
     
     if IsPlayer then
@@ -81,6 +75,7 @@ function RenderVisual(Model, IsPlayer)
 
     Model.AncestryChanged:Connect(function()
         Models[Model] = nil
+        Model:Destroy()
     end)
 end
 
@@ -130,8 +125,10 @@ function CharacterController:KnitStart()
 
         RenderVisual(Character, false)
 
-        Humanoid.Died:Connect(function()
-            Thread.Delay(6, function()
+        local Died
+        Died = Humanoid.Died:Connect(function()
+            Died:Disconnect()
+            Thread.Delay(0.5, function()
                 CharacterService.Spawn:Fire("R6")
             end)
         end)

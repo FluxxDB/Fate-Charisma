@@ -19,18 +19,14 @@ local SpecialKeys = {
 	[Enum.KeyCode.RightShift] = "Shift";
 }
 
-local IKeys = { "M1", "M2", "Ctrl", "Shift" };
+
 local Inputs = {}
 
 -- Functions
 local function GetKey(input)
 	local KeyCode = input.KeyCode
-	local Key = ""
-
-	pcall(function()
-		Key = string.char(KeyCode.Value)
-		Key = (string.match(Key, "."))
-	end)
+	local Key = string.char(KeyCode.Value)
+	Key = string.match(Key, ".")
 
 	if Key ~= "" and Key then
 		Key = string.upper(Key)
@@ -41,11 +37,11 @@ local function GetKey(input)
 	return Key
 end
 
-local function IsDown(Key)
-	return UIS:IsKeyDown(Enum.KeyCode[Key]);
+function IsDown(Key)
+	return UIS:IsKeyDown(Enum.KeyCode[Key])
 end
 
-local function WereTapped(InSeconds, Key)
+function WereTapped(InSeconds, Key)
 	local KeyObject = Inputs[Key]
 	if not KeyObject then return end
 
@@ -55,7 +51,7 @@ local function WereTapped(InSeconds, Key)
 	return true
 end
 
-local function WereAnyTapped(InSeconds, ...)
+function WereAnyTapped(InSeconds, ...)
 	local Keys = { ... }
 
 	for _, Key in ipairs(Keys) do
@@ -67,7 +63,7 @@ local function WereAnyTapped(InSeconds, ...)
 	return false
 end
 
-local function WereAllTapped(InSeconds, ...)
+function WereAllTapped(InSeconds, ...)
 	local Keys = { ... }
 
 	for _, Key in ipairs(Keys) do
@@ -79,7 +75,7 @@ local function WereAllTapped(InSeconds, ...)
 	return true
 end
 
-local function WasTapped(InSeconds, Key)
+function WasTapped(InSeconds, Key)
 	local KeyObject = Inputs[Key]
 	if not KeyObject then return end
 
@@ -89,7 +85,7 @@ local function WasTapped(InSeconds, Key)
 	return true
 end
 
-local function WasAnyTapped(InSeconds, ...)
+function WasAnyTapped(InSeconds, ...)
 	local Keys = { ... }
 
 	for _, Key in ipairs(Keys) do
@@ -101,7 +97,7 @@ local function WasAnyTapped(InSeconds, ...)
 	return false
 end
 
-local function WasAllTapped(InSeconds, ...)
+function WasAllTapped(InSeconds, ...)
 	local Keys = { ... }
 
 	for _, Key in ipairs(Keys) do
@@ -113,11 +109,11 @@ local function WasAllTapped(InSeconds, ...)
 	return true
 end
 
-local function AreAnyDown(...)
+function AreAnyDown(...)
 	local Keys = { ... }
 
 	for _, Key in ipairs(Keys) do
-		if UIS:IsKeyDown(Enum.KeyCode[Key]) or table.find(IKeys, Key) then
+		if UIS:IsKeyDown(Enum.KeyCode[Key]) then
 			return true
 		end
 	end
@@ -125,11 +121,11 @@ local function AreAnyDown(...)
 	return false
 end
 
-local function AreAllDown(...)
+function AreAllDown(...)
 	local Keys = { ... }
 
 	for _, Key in ipairs(Keys) do
-		if not (UIS:IsKeyDown(Enum.KeyCode[Key]) or table.find(IKeys, Key)) then
+		if not UIS:IsKeyDown(Enum.KeyCode[Key]) then
 			return false
 		end
 	end
@@ -153,15 +149,18 @@ local InputController = Knit.CreateController {
 }
 
 function InputController:KnitInit()
-	self.Began = Signal.new()
-	self.Ended = Signal.new()
+	local Began = Signal.new()
+	local Ended = Signal.new()
+	
+	self.Began = Began
+	self.Ended = Ended
 
 	UIS.InputBegan:Connect(function(Input, GameProcessed)
-        if (GameProcessed) then return end
+        if GameProcessed then return end
 
 		local Type = Types[Input.UserInputType]
         if not (Type ~= "" and Type) then
-            return nil
+            return
         end
 
         local Key
@@ -185,15 +184,15 @@ function InputController:KnitInit()
             end
         end
 
-        self.Began:Fire(Input, Key);
+        Began:Fire(Input, Key);
 	end)
 
 	UIS.InputEnded:Connect(function(Input, GameProcessed)
-        if GameProcessed then return nil end
+        if GameProcessed then return end
 
         local Type = Types[Input.UserInputType]
         if not (Type ~= "" and Type) then
-            return nil
+            return
         end
 
         local Key
@@ -204,7 +203,7 @@ function InputController:KnitInit()
             Key = GetKey(Input)
         end
 
-        self.Ended:Fire(Input, Key)
+        Ended:Fire(Input, Key)
 	end)
 end
 

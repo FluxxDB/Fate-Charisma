@@ -91,6 +91,10 @@ function CharacterService:KnitStart()
         Humanoid.Died:Connect(function()
             Flood:Check(Player, 1, 5, "SpawnRemote")
             Object.Character = nil
+
+            local PositionBuffer = Object.PositionBuffer
+            if not PositionBuffer then return end
+            PositionBuffer.Data = {}
         end)
 
         Model.Name = Player.Name
@@ -105,7 +109,7 @@ function CharacterService:KnitStart()
             if not PositionBuffer then return end
             
             local Character = Object.Character
-            if not Character then continue end
+            if not Character or not Character.PrimaryPart then continue end
 
             PositionBuffer:insert(Character.PrimaryPart.CFrame)
         end

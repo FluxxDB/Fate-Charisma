@@ -164,6 +164,11 @@ function HitCheck(Player, Humanoids)
     local MaxHits = Move.MaxHits
     local Damage = Move.Damage
     local Tags = Move.Tags
+
+    local Parts = {}
+    
+    local DistancePing = math.clamp(math.ceil(Ping * 10 - 1), 1, 9)
+    local LerpPosition = math.fmod(Ping, 0.1) * 10
     
     for _, Hit in ipairs(Humanoids) do
         if Hits[Hit] and Hits[Hit] >= MaxHits then
@@ -174,7 +179,26 @@ function HitCheck(Player, Humanoids)
         local IsPlayer = PlayerService:GetPlayerFromCharacter(Hit)
 
         if IsPlayer then -- Player
-            Invalid = false
+            local Victim = Players[IsPlayer]
+            if not Victim or Victim:HasKey("iFrame") then
+                continue
+            end
+
+            local Data = Victim.PostionBuffer.Data
+            if not Data or #Data < 10 then continue end
+            
+            local P0 = Data[DistancePing]
+            local P1 = Data[DistancePing + 1]
+
+            local Part = Instance.new("Part")
+            Part.Size = Vector3.new(4, 5, 1)
+            Part.CFrame = P1:Lerp(P0, LerpPosition) * CFrame.new(0, -0.5, 0)
+            Part.CanCollide = false
+            Part.Anchored = true
+            Part.Parent = Hit
+
+            Hits[Hit] = (Hits[Hit] or 0) + 1
+            continue
         else -- NPC
             Invalid = Player:DistanceFromCharacter(Hit.RootPart.Position) > 50
         end

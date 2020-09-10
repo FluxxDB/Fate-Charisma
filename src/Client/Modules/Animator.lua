@@ -156,6 +156,7 @@ function Animator.new(Character)
 		end
 
 		if Humanoid.Health == 0 then
+			self.Disabled = true
 			Maid:DoCleaning()
 		end
 		
