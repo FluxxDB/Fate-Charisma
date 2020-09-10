@@ -36,8 +36,15 @@ end
 function CombatController:KnitStart()
     Input.Began:Connect(function(_, Key)
         if not (Key or Player.Character) then return end
-        if not PlayerController.Weapon then return end
-        SetKey("CanCombo")
+        if HasKey("Stagger") or 
+            HasKey("AttackAnimation") 
+        then return end
+
+        if Input.IsDown("V") and Input.AreAnyDown("W", "S") and not HasKey("Dash") then
+            return Dash()
+        end
+
+        if not PlayerController.Weapon or HasKey("Attack") or HasKey("DashAnimation") then return end
         PlayerController.Weapon:Progress(Key)
     end)
 end
