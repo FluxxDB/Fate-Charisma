@@ -1,144 +1,101 @@
--- Signal
+-- Event
 -- Stephen Leitnick
--- Based off of Anaminus' Signal class: https://gist.github.com/Anaminus/afd813efc819bad8e560caea28942010
+-- March 17, 2017
 
 --[[
-
-	signal = Signal.new()
-
-	signal:Fire(...)
-	signal:Wait()
-	signal:WaitPromise()
-	signal:Destroy()
-	signal:DisconnectAll()
 	
-	connection = signal:Connect(functionHandler)
+	event = Event.new()
+	
+	event:Fire(...)
+	event:Wait()
+	event:Connect(functionHandler)
+	event:DisconnectAll()
+	event:Destroy()
+	
+	
+	Using 'Connect':
 
-	connection:Disconnect()
-	connection:IsConnected()
+		connection = event:Connect(func)
+			connection.Connected
+			connection:Disconnect()
+	
 
+	-----------------------------------------------------------------------------
+
+	NOTE ON MEMORY LEAK PREVENTION:
+		If an event is no longer being used, be sure to invoke the 'Destroy' method
+		to ensure that all events are properly released. Failure to do so could
+		result in memory leaks due to connections still being referenced.
+
+	WHY NOT BINDABLE EVENTS:
+		This module passes by reference, whereas BindableEvents pass by value.
+		In other words, BindableEvents will create a copy of whatever is passed
+		rather than the original value itself. This becomes difficult when dealing
+		with tables, where passing by reference is usually most ideal.
+	
 --]]
 
-local Promise = require(script.Parent.Promise)
 
-local Connection = {}
-Connection.__index = Connection
 
-function Connection.new(signal, connection)
+local ASSERT  = assert
+local SELECT  = select
+local UNPACK  = unpack
+local TYPE    = type
+
+
+local Event = {}
+Event.__index = Event
+
+
+function Event.new()
 	local self = setmetatable({
-		_signal = signal;
-		_conn = connection;
-		Connected = true;
-	}, Connection)
-	return self
-end
-
-function Connection:Disconnect()
-	if (self._conn) then
-		self._conn:Disconnect()
-		self._conn = nil
-	end
-	if (not self._signal) then return end
-	self.Connected = false
-	local connections = self._signal._connections
-	local connectionIndex = table.find(connections, self)
-	if (connectionIndex) then
-		local n = #connections
-		connections[connectionIndex] = connections[n]
-		connections[n] = nil
-	end
-	self._signal = nil
-end
-
-function Connection:IsConnected()
-	if (self._conn) then
-		return self._conn.Connected
-	end
-	return false
-end
-
-Connection.Destroy = Connection.Disconnect
-
---------------------------------------------
-
-local Signal = {}
-Signal.__index = Signal
-
-
-function Signal.new()
-	local self = setmetatable({
-		_bindable = Instance.new("BindableEvent");
 		_connections = {};
-		_args = {};
-		_threads = 0;
-		_id = 0;
-	}, Signal)
+		_destroyed = false;
+		_firing = false;
+		_bindable = Instance.new("BindableEvent");
+	}, Event)
+	
 	return self
+	
+end
+
+function Event.Is(obj)
+	return (type(obj) == "table" and getmetatable(obj) == Event)
+end
+
+function Event:Fire(...)
+	self._args = {...}
+	self._numArgs = SELECT("#", ...)
+	self._bindable:Fire()
 end
 
 
-function Signal.Is(obj)
-	return (type(obj) == "table" and getmetatable(obj) == Signal)
+function Event:Wait()
+	self._bindable.Event:Wait()
+	return UNPACK(self._args, 1, self._numArgs)
 end
 
 
-function Signal:Fire(...)
-	local id = self._id
-	self._id = self._id + 1
-	self._args[id] = {#self._connections + self._threads, {n = select("#", ...), ...}}
-	self._threads = 0
-	self._bindable:Fire(id)
-end
-
-
-function Signal:Wait()
-	self._threads = self._threads + 1
-	local id = self._bindable.Event:Wait()
-	local args = self._args[id]
-	args[1] = args[1] - 1
-	if (args[1] <= 0) then
-		self._args[id] = nil
-	end
-	return table.unpack(args[2], 1, args[2].n)
-end
-
-
-function Signal:WaitPromise()
-	return Promise.new(function(resolve)
-		resolve(self:Wait())
+function Event:Connect(func)
+	ASSERT(not self._destroyed, "Cannot connect to destroyed event")
+	ASSERT(TYPE(func) == "function", "Argument must be function")
+	return self._bindable.Event:Connect(function()
+		func(UNPACK(self._args, 1, self._numArgs))
 	end)
 end
 
 
-function Signal:Connect(handler)
-	local connection = Connection.new(self, self._bindable.Event:Connect(function(id)
-		local args = self._args[id]
-		args[1] = args[1] - 1
-		if (args[1] <= 0) then
-			self._args[id] = nil
-		end
-		handler(table.unpack(args[2], 1, args[2].n))
-	end))
-	table.insert(self._connections, connection)
-	return connection
+function Event:DisconnectAll()
+	self._bindable:Destroy()
+	self._bindable = Instance.new("BindableEvent")
 end
 
 
-function Signal:DisconnectAll()
-	for _,c in ipairs(self._connections) do
-		if (c._conn) then
-			c._conn:Disconnect()
-		end
-	end
-	self._connections = {}
-	self._args = {}
-end
-
-
-function Signal:Destroy()
-	self:DisconnectAll()
+function Event:Destroy()
+	if (self._destroyed) then return end
+	self._destroyed = true
 	self._bindable:Destroy()
 end
 
 
-return Signal
+return Event
